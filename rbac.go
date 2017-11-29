@@ -4,9 +4,14 @@ import (
 	"fmt"
 )
 
+//用户接口
+type Identify interface {
+	GetUid() int
+}
+
 type Rbac struct {
 }
 
-func (this *Rbac) A(name string) {
-	fmt.Println(name)
+func (this *Rbac) CheckAccess() bool {
+	return false
 }

@@ -4,12 +4,11 @@ import (
 	. "grabc/views"
 )
 
-type RouteController struct {
+type AssignmentController struct {
 	BaseController
 }
 
-func (this *RouteController) Index() {
+func (this *AssignmentController) Index() {
 	routeIndex := &RouteIndex{}
-	this.htmlData["aa"] = "bb"
 	this.ServerHtml(routeIndex)
 }

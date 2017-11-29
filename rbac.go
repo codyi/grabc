@@ -2,7 +2,16 @@ package grbac
 
 import (
 	"fmt"
+	"github.com/astaxie/beego"
+	"grabc/controller"
 )
+
+func init() {
+	beego.AutoRouter(&controller.RouteController{})
+	beego.AutoRouter(&controller.RoleController{})
+	beego.AutoRouter(&controller.PermissionController{})
+	beego.AutoRouter(&controller.AssignmentController{})
+}
 
 //用户接口
 type Identify interface {

@@ -53,9 +53,17 @@ func AllRoutes() map[string][]string {
 		controllerRoutes = append(controllerRoutes, "*")
 
 		for i := 0; i < rt.NumMethod(); i++ {
-			if !utils.InSlice(rt.Method(i).Name, exceptMethods) && !utils.InSlice(rt.Method(i).Name, tempMethods) {
+			if rt.Method(i).Name == "RABCMethods" {
+				result := reflectVal.MethodByName("RABCMethods").Call([]reflect.Value{})
+				for _, routeSlice := range result {
+					for _, v := range routeSlice.Interface().([]string) {
+						controllerRoutes = append(controllerRoutes, v)
+					}
+				}
+			} else if !utils.InSlice(rt.Method(i).Name, exceptMethods) && !utils.InSlice(rt.Method(i).Name, tempMethods) {
 				controllerRoutes = append(controllerRoutes, rt.Method(i).Name)
 			}
+
 		}
 
 		routes[controllerName] = controllerRoutes

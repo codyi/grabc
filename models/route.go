@@ -63,3 +63,12 @@ func (this *Route) Delete() (isDelete bool, err error) {
 
 	return num > 0, err
 }
+
+//retrieve all route
+func (this Route) FindAll() ([]*Route, error) {
+	var routes []*Route
+	o := orm.NewOrm()
+	_, err := o.QueryTable(this.TableName()).All(&routes)
+
+	return routes, err
+}

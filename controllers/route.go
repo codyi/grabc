@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"grabc/models"
-	. "grabc/views"
+	"grabc/views"
 	"strings"
 )
 
@@ -12,8 +12,18 @@ type RouteController struct {
 
 //route index page
 func (this *RouteController) Index() {
-	routeIndex := &RouteIndex{}
-	this.ShowHtml(routeIndex)
+	routeModel := models.Route{}
+	routes, _ := routeModel.FindAll()
+	var insertRoutes []string
+
+	if routes != nil {
+		for _, route := range routes {
+			insertRoutes = append(insertRoutes, route.Route)
+		}
+	}
+
+	this.htmlData["insertRoutes"] = insertRoutes
+	this.ShowHtml(&views.RouteIndex{})
 }
 
 //route ajax add page
@@ -26,7 +36,7 @@ func (this *RouteController) Add() {
 		routeModel := models.Route{}
 		routeModel.Route = route
 
-		if isInsert, err := routeModel.Insert(); isInsert {
+		if isInsert, _ := routeModel.Insert(); isInsert {
 			data.Code = 200
 			data.Message = "添加成功"
 			data.Data = make(map[string]interface{})

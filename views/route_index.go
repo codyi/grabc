@@ -25,6 +25,9 @@ func (this *RouteIndex) Html() string {
 				</div>
 			</div>
 			<select multiple="" size="20" class="col-md-5" id="route_selected">
+			    {{range $index,$route := .insertRoutes}}
+                <option value="{{$route}}">{{$route}}</option>
+                {{end}}
 			</select>
 		</div>
 	</div>

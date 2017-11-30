@@ -1,4 +1,4 @@
-package controller
+package controllers
 
 import (
 	. "grabc/views"
@@ -10,5 +10,5 @@ type PermissionController struct {
 
 func (this *PermissionController) Index() {
 	routeIndex := &RouteIndex{}
-	this.ServerHtml(routeIndex)
+	this.ShowHtml(routeIndex)
 }

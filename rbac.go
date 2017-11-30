@@ -3,14 +3,14 @@ package grbac
 import (
 	"fmt"
 	"github.com/astaxie/beego"
-	"grabc/controller"
+	"grabc/controllers"
 )
 
 func init() {
-	beego.AutoRouter(&controller.RouteController{})
-	beego.AutoRouter(&controller.RoleController{})
-	beego.AutoRouter(&controller.PermissionController{})
-	beego.AutoRouter(&controller.AssignmentController{})
+	beego.AutoRouter(&controllers.RouteController{})
+	beego.AutoRouter(&controllers.RoleController{})
+	beego.AutoRouter(&controllers.PermissionController{})
+	beego.AutoRouter(&controllers.AssignmentController{})
 }
 
 //用户接口

@@ -1,4 +1,4 @@
-package controller
+package controllers
 
 import (
 	"bytes"
@@ -11,6 +11,13 @@ type HtmlTemplate interface {
 	Html() string
 }
 
+type JsonData struct {
+	Code    int
+	Message string
+	Data    map[string]interface{}
+}
+
+//Base controller
 type BaseController struct {
 	beego.Controller
 	controllerName string
@@ -27,7 +34,7 @@ func (this *BaseController) Prepare() {
 }
 
 //显示页面
-func (this *BaseController) ServerHtml(html HtmlTemplate) {
+func (this *BaseController) ShowHtml(html HtmlTemplate) {
 	tmpl, err := template.New("grabc").Parse(html.Html())
 
 	if err != nil {
@@ -38,4 +45,15 @@ func (this *BaseController) ServerHtml(html HtmlTemplate) {
 	tmpl.Execute(&htmlContent, this.htmlData)
 	this.Ctx.WriteString(htmlContent.String())
 	this.StopRun()
+}
+
+//server Json
+func (this *BaseController) ShowJSON(data *JsonData) {
+	this.Data["json"] = data
+	this.Controller.ServeJSON()
+}
+
+// 是否POST提交
+func (this *BaseController) isPost() bool {
+	return this.Ctx.Request.Method == "POST"
 }

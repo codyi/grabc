@@ -6,9 +6,9 @@ type RouteIndex struct {
 
 func (this *RouteIndex) Html() string {
 	html := `
-	<div class="container" style="padding-top: 60px">
+	<div class="container content_warp">
 		<div class="row">
-			<select multiple="" size="20" class="col-md-5" id="route_select">
+			<select multiple="" class="col-md-5" id="route_select">
 			</select>
 			<div class="col-md-1">
 				<div>
@@ -18,7 +18,7 @@ func (this *RouteIndex) Html() string {
 					<button id="remove_route" class="btn btn-danger"><<删除</button>
 				</div>
 			</div>
-			<select multiple="" size="20" class="col-md-5" id="route_selected">
+			<select multiple="" class="col-md-5" id="route_selected">
 			</select>
 		</div>
 	</div>

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"github.com/astaxie/beego/utils"
 	"grabc/libs"
 	"grabc/models"
 	"grabc/views"
@@ -25,8 +25,16 @@ func (this *RouteController) Index() {
 	}
 
 	allRoutes := libs.AllRoutes()
-	fmt.Println(allRoutes)
-	this.htmlData["insertRoutes"] = insertRoutes
+	var notAddRoutes []string
+
+	for _, route := range allRoutes {
+		if !utils.InSlice(route, insertRoutes) {
+			notAddRoutes = append(notAddRoutes, route)
+		}
+	}
+
+	this.htmlData["notAddRoutes"] = notAddRoutes
+	this.htmlData["addRoutes"] = insertRoutes
 	this.ShowHtml(&views.RouteIndex{})
 }
 
@@ -52,7 +60,32 @@ func (this *RouteController) Add() {
 
 	} else {
 		data.Code = 400
-		data.Message = "添加失败"
+		data.Message = "非法请求"
+	}
+
+	this.ShowJSON(&data)
+}
+
+//route ajax remove page
+func (this *RouteController) Remove() {
+	data := JsonData{}
+
+	if this.isPost() {
+		route := strings.TrimSpace(this.GetString("route"))
+
+		routeModel := models.Route{}
+
+		if isDelete, _ := routeModel.DeleteByRoute(route); isDelete {
+			data.Code = 200
+			data.Message = "删除成功"
+		} else {
+			data.Code = 400
+			data.Message = "删除成功"
+		}
+
+	} else {
+		data.Code = 400
+		data.Message = "非法请求"
 	}
 
 	this.ShowJSON(&data)

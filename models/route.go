@@ -52,14 +52,16 @@ func (this *Route) Insert() (isInsert bool, err error) {
 }
 
 //remove current route from database
-func (this *Route) Delete() (isDelete bool, err error) {
-	if this.Id <= 0 {
-		return false, errors.New("当前对象为空不能删除")
+func (this Route) DeleteByRoute(route string) (isDelete bool, err error) {
+	if route == "" {
+		return false, errors.New("路由地址不能为空")
 	}
-
 	o := orm.NewOrm()
 
-	num, err := o.Delete(this)
+	routeModel := &Route{}
+	o.QueryTable(this.TableName()).Filter("route", route).One(routeModel)
+
+	num, err := o.Delete(routeModel)
 
 	return num > 0, err
 }

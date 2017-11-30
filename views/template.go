@@ -17,6 +17,7 @@ func (this *baseTemplate) getHeaderHtml() string {
 	<meta name='csrf-param' content='_csrf-backend'>
 	<title>路由列表</title>
 	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="http://127.0.0.1:8080/static/html/global.css" crossorigin="anonymous">
 	` + getGlobalCss() + `
 </head>
 <body>
@@ -40,6 +41,6 @@ func (this *baseTemplate) getFooterHtml() string {
 	return `
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-	
+	<script src="http://127.0.0.1:8080/static/html/global.js"></script>
 ` + getGlobalJs() + "</body></html>"
 }

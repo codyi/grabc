@@ -9,12 +9,6 @@ func (this *RouteIndex) Html() string {
 	<div class="container" style="padding-top: 60px">
 		<div class="row">
 			<select multiple="" size="20" class="col-md-5" id="route_select">
-			    <option value="/banner/*">/banner/*</option>
-                <option value="/banner/1">/banner/*</option>
-                <option value="/banner/2">/banner/*</option>
-                <option value="/banner/3">/banner/*</option>
-                <option value="/banner/4">/banner/*</option>
-                <option value="/banner/5">/banner/*</option>
 			</select>
 			<div class="col-md-1">
 				<div>
@@ -25,12 +19,19 @@ func (this *RouteIndex) Html() string {
 				</div>
 			</div>
 			<select multiple="" size="20" class="col-md-5" id="route_selected">
-			    {{range $index,$route := .insertRoutes}}
-                <option value="{{$route}}">{{$route}}</option>
-                {{end}}
 			</select>
 		</div>
 	</div>
+	<script>
+	    var addRoutes = new Array();
+        var notAddRoutes = new Array();
+		{{range $index,$route := .notAddRoutes}}
+		notAddRoutes.push("{{$route}}")
+        {{end}}
+        {{range $index,$route := .addRoutes}}
+        addRoutes.push("{{$route}}")
+		{{end}}
+    </script>
 `
 	return this.dealHtml(html)
 }

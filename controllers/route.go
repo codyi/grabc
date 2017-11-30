@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+	"grabc/libs"
 	"grabc/models"
 	"grabc/views"
 	"strings"
@@ -22,6 +24,8 @@ func (this *RouteController) Index() {
 		}
 	}
 
+	allRoutes := libs.AllRoutes()
+	fmt.Println(allRoutes)
 	this.htmlData["insertRoutes"] = insertRoutes
 	this.ShowHtml(&views.RouteIndex{})
 }

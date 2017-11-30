@@ -3,9 +3,14 @@ package controllers
 import (
 	"bytes"
 	"github.com/astaxie/beego"
+	"grabc/libs"
 	"strings"
 	"text/template"
 )
+
+func init() {
+	libs.ExceptMethodAppend("ShowHtml", "ShowJSON")
+}
 
 type HtmlTemplate interface {
 	Html() string

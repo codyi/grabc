@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"grabc/libs"
 	"grabc/models"
 	"grabc/views/permission"
+	"strconv"
 	"strings"
 )
 
@@ -10,21 +12,33 @@ type PermissionController struct {
 	BaseController
 }
 
+//permision index page
 func (this *PermissionController) Index() {
-	var pageIndex, pageCount int
-	pageIndex = 1
-	pageCount = 10
+	page_index := strings.TrimSpace(this.GetString("page_index"))
 
-	permissions, err := models.Permission{}.FindAll(pageIndex, pageCount)
+	pagination := libs.Pagination{}
+	pagination.PageCount = 3
+	pagination.Url = this.URLFor("PermissionController.Index")
+
+	if s, err := strconv.Atoi(page_index); err == nil {
+		pagination.PageIndex = s
+	} else {
+		pagination.PageIndex = 1
+	}
+
+	permissions, pageTotal, err := models.Permission{}.FindAll(pagination.PageIndex, pagination.PageCount)
 
 	if err != nil {
-		this.AddErrorMessage("信息获取失败")
+		this.AddErrorMessage(err.Error())
 	}
-	// this.AddErrorMessage("信息获取失败")
+
+	pagination.PageTotal = pageTotal
 	this.htmlData["permissions"] = permissions
+	this.htmlData["pages"] = pagination
 	this.ShowHtml(&permission.Index{})
 }
 
+//permision add page
 func (this *PermissionController) Add() {
 
 	if this.isPost() {

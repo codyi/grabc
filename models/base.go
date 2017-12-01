@@ -10,6 +10,4 @@ func init() {
 }
 
 type BaseModel struct {
-	PageIndex int
-	PageCount int
 }

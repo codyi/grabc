@@ -65,10 +65,16 @@ func (this Permission) DeleteByName(name string) (isDelete bool, err error) {
 }
 
 //retrieve all permissions
-func (this Permission) FindAll(pageIndex, pageCount int) ([]*Permission, error) {
+func (this Permission) FindAll(pageIndex, pageCount int) ([]*Permission, int, error) {
 	var permissions []*Permission
+	var total int64
 	o := orm.NewOrm()
 	_, err := o.QueryTable(this.TableName()).Limit(pageCount).Offset(pageCount * (pageIndex - 1)).All(&permissions)
 
-	return permissions, err
+	if err != nil {
+		return permissions, int(total), err
+	}
+
+	total, err = o.QueryTable(this.TableName()).Count()
+	return permissions, int(total), err
 }

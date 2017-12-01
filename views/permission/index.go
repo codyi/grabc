@@ -47,7 +47,7 @@ func (this *Index) Html() string {
                     {{end}}
                 </tbody>
             </table>
-            {{pagination}}
+            {{pagination .pages}}
         </div>
     </div>
 `

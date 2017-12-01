@@ -23,7 +23,7 @@ func (this *Index) Html() string {
                         <td>ID</td>
                         <td>权限名称</td>
                         <td>权限描述</td>
-                        <td>操作</td>
+                        <td class="row_operate">操作</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,30 +32,22 @@ func (this *Index) Html() string {
                         <td>{{$permission.Id}}</td>
                         <td>{{$permission.Name}}</td>
                         <td>{{$permission.Description}}</td>
-                        <td>操作</td>
+                        <td>
+                            <a href="/permission/get?id={{$permission.Id}}" title="查看">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                            </a>
+                            <a href="/permission/put?id={{$permission.Id}}" title="更新">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </a>
+                            <a href="/permission/delete?id={{$permission.Id}}" title="删除" data-confirm="您确定要删除此项吗？">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </td>
                     </tr>
                     {{end}}
                 </tbody>
             </table>
-            <nav aria-label="Page navigation" class="pagination_warp">
-                <ul class="pagination">
-                    <li>
-                        <a href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li>
-                        <a href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+            {{pagination}}
         </div>
     </div>
 `

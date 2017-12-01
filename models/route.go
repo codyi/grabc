@@ -6,11 +6,8 @@ import (
 	"time"
 )
 
-func init() {
-	orm.RegisterModel(new(Route))
-}
-
 type Route struct {
+	BaseModel
 	Id       int    `json:"id" label:"Id"`
 	Route    string `json:"route" label:"路由地址"`
 	CreateAt int32  `json:"create_at" label:"创建时间"`

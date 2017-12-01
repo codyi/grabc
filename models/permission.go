@@ -6,11 +6,8 @@ import (
 	"time"
 )
 
-func init() {
-	orm.RegisterModel(new(Permission))
-}
-
 type Permission struct {
+	BaseModel
 	Id          int    `json:"id" label:"Id"`
 	Name        string `json:"name" label:"权限名称"`
 	Description string `json:"description" label:"权限描述"`

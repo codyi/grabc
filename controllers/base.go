@@ -29,6 +29,7 @@ type BaseController struct {
 	controllerName string
 	actionName     string
 	htmlData       map[interface{}]interface{}
+	funcMap        template.FuncMap
 }
 
 // redirect to url
@@ -43,11 +44,14 @@ func (this *BaseController) Prepare() {
 	controlerName, actionName := this.GetControllerAndAction()
 	this.controllerName = strings.ToLower(controlerName[0 : len(controlerName)-10])
 	this.actionName = strings.ToLower(actionName)
+	this.funcMap = template.FuncMap{
+		"pagination": libs.Pagination,
+	}
 }
 
 //显示页面
 func (this *BaseController) ShowHtml(html HtmlTemplate) {
-	tmpl, err := template.New("grabc").Parse(html.Html())
+	tmpl, err := template.New("grabc").Funcs(this.funcMap).Parse(html.Html())
 
 	if err != nil {
 		this.Ctx.WriteString(err.Error())

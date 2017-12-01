@@ -25,9 +25,16 @@ type JsonData struct {
 //Base controller
 type BaseController struct {
 	beego.Controller
+	libs.Alert
 	controllerName string
 	actionName     string
 	htmlData       map[interface{}]interface{}
+}
+
+// redirect to url
+func (this *BaseController) redirect(url string) {
+	this.Controller.Redirect(url, 301)
+	this.StopRun()
 }
 
 // Prepare
@@ -47,6 +54,7 @@ func (this *BaseController) ShowHtml(html HtmlTemplate) {
 	}
 
 	var htmlContent bytes.Buffer
+	this.htmlData["alert_messages"] = this.Alert
 	tmpl.Execute(&htmlContent, this.htmlData)
 	this.Ctx.WriteString(htmlContent.String())
 	this.StopRun()

@@ -4,7 +4,7 @@ import (
 	"github.com/astaxie/beego/utils"
 	"grabc/libs"
 	"grabc/models"
-	"grabc/views"
+	"grabc/views/route"
 	"strings"
 )
 
@@ -35,7 +35,7 @@ func (this *RouteController) Index() {
 
 	this.htmlData["notAddRoutes"] = notAddRoutes
 	this.htmlData["addRoutes"] = insertRoutes
-	this.ShowHtml(&views.RouteIndex{})
+	this.ShowHtml(&route.Index{})
 }
 
 //route ajax add page

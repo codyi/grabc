@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	. "grabc/views"
+	"grabc/views/route"
 )
 
 type RoleController struct {
@@ -9,6 +9,5 @@ type RoleController struct {
 }
 
 func (this *RoleController) Index() {
-	routeIndex := &RouteIndex{}
-	this.ShowHtml(routeIndex)
+	this.ShowHtml(&route.Index{})
 }

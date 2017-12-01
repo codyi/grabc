@@ -1,6 +1,6 @@
-package views
+package layout
 
-func getGlobalCss() string {
+func GetGlobalCss() string {
 	return `
 	<style type="text/css">
 		.navbar-nav>li>a.active{color: white}

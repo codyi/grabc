@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	. "grabc/views"
+	"grabc/views/route"
 )
 
 type AssignmentController struct {
@@ -9,6 +9,5 @@ type AssignmentController struct {
 }
 
 func (this *AssignmentController) Index() {
-	routeIndex := &RouteIndex{}
-	this.ShowHtml(routeIndex)
+	this.ShowHtml(&route.Index{})
 }

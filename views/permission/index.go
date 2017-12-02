@@ -33,13 +33,13 @@ func (this *Index) Html() string {
                         <td>{{$permission.Name}}</td>
                         <td>{{$permission.Description}}</td>
                         <td>
-                            <a href="/permission/get?id={{$permission.Id}}" title="查看">
+                            <a href="/permission/get?permission_id={{$permission.Id}}" title="查看">
                                 <span class="glyphicon glyphicon-eye-open"></span>
                             </a>
-                            <a href="/permission/put?id={{$permission.Id}}" title="更新">
+                            <a href="/permission/put?permission_id={{$permission.Id}}" title="更新">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </a>
-                            <a href="/permission/delete?id={{$permission.Id}}" title="删除" data-confirm="您确定要删除此项吗？">
+                            <a href="/permission/delete?permission_id={{$permission.Id}}" title="删除" data-confirm="您确定要删除此项吗？">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </a>
                         </td>

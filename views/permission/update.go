@@ -4,18 +4,16 @@ import (
 	. "grabc/views/layout"
 )
 
-type Add struct {
+type Update struct {
 	BaseTemplate
 	Form
 }
 
-func (this *Add) Html() string {
+func (this *Update) Html() string {
 	html := `
 <div class="box box-info">
     <div class="box-body">
-        <form action="/permission/add" method="post" class="form-horizontal">
-        ` + this.FormHtml() + `
-		</form>
+        <form action="/permission/put?permission_id={{.model.Id}}" method="post" class="form-horizontal">` + this.FormHtml() + `</form>
     </div>
 </div>`
 

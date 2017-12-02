@@ -8,14 +8,22 @@ import (
 
 type Permission struct {
 	BaseModel
-	Id          int    `json:"id" label:"Id"`
 	Name        string `json:"name" label:"权限名称"`
 	Description string `json:"description" label:"权限描述"`
-	CreateAt    int32  `json:"create_at" label:"创建时间"`
 }
 
 func (this *Permission) TableName() string {
 	return "rabc_permission"
+}
+
+//Find one permission by id from database
+func (this *Permission) FindById(id int) error {
+	if id <= 0 {
+		return errors.New("权限ID不能为空")
+	}
+
+	o := orm.NewOrm()
+	return o.QueryTable(this.TableName()).Filter("id", id).One(this)
 }
 
 //Find one permission by name from database
@@ -47,6 +55,26 @@ func (this *Permission) Insert() (isInsert bool, err error) {
 	id, err := o.Insert(this)
 
 	return id > 0, err
+}
+
+//update current permission to database
+//not update if name is exist
+func (this *Permission) Update() (err error) {
+	if this.Name == "" {
+		return errors.New("权限名称不能为空")
+	}
+
+	self := Permission{}
+	self.FindByName(this.Name)
+	if self.Id > 0 && self.Id != this.Id {
+		return errors.New("权限已经存在")
+	}
+
+	o := orm.NewOrm()
+
+	_, err = o.Update(this)
+
+	return err
 }
 
 //remove current name from database

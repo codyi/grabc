@@ -185,11 +185,13 @@ func (this *PermissionController) AssignmentRoute() {
 				data.Code = 400
 				data.Message = "路由不存在"
 				this.ShowJSON(&data)
+				return
 			}
 		} else {
 			data.Code = 400
 			data.Message = "路由不能为空"
 			this.ShowJSON(&data)
+			return
 		}
 
 		if i, err := strconv.Atoi(permissionId); err == nil {
@@ -198,6 +200,7 @@ func (this *PermissionController) AssignmentRoute() {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
+			return
 		}
 
 		if isInsert, err := permissionRouteModel.Insert(); isInsert {
@@ -239,17 +242,20 @@ func (this *PermissionController) RemoveRoute() {
 				data.Code = 400
 				data.Message = "路由不存在"
 				this.ShowJSON(&data)
+				return
 			}
 		} else {
 			data.Code = 400
 			data.Message = "路由不能为空"
 			this.ShowJSON(&data)
+			return
 		}
 
 		if id, err := strconv.Atoi(param_permision_id); err != nil {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
+			return
 		} else {
 			int_param_permission_id = id
 		}
@@ -274,4 +280,50 @@ func (this *PermissionController) RemoveRoute() {
 
 //permision delete page
 func (this *PermissionController) Delete() {
+	data := JsonData{}
+	if this.isPost() {
+		permision_id, err := strconv.Atoi(strings.TrimSpace(this.GetString("permission_id")))
+
+		if err != nil {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+			return
+		}
+
+		permissionModel := models.Permission{}
+		if err := permissionModel.FindById(permision_id); err != nil {
+			data.Code = 400
+			data.Message = "数据获取失败"
+			this.ShowJSON(&data)
+			return
+		}
+
+		permissionRouteModel := models.PermissionRoute{}
+		err = permissionRouteModel.DeleteByPermissionId(permissionModel.Id)
+
+		if err != nil {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+			return
+		}
+
+		if is_delete, err := permissionModel.Delete(); is_delete {
+			data.Code = 200
+			data.Message = "删除成功"
+			this.ShowJSON(&data)
+			return
+		} else {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+			return
+		}
+	} else {
+		data.Code = 400
+		data.Message = "非法请求"
+	}
+
+	this.ShowJSON(&data)
 }

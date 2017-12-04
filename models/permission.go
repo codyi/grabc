@@ -106,3 +106,15 @@ func (this Permission) FindAll(pageIndex, pageCount int) ([]*Permission, int, er
 	total, err = o.QueryTable(this.TableName()).Count()
 	return permissions, int(total), err
 }
+
+//remove current name from database
+func (this *Permission) Delete() (isDelete bool, err error) {
+	if this.Id <= 0 {
+		return false, errors.New("数据不能为空")
+	}
+
+	o := orm.NewOrm()
+	num, err := o.Delete(this)
+
+	return num > 0, err
+}

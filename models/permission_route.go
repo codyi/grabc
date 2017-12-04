@@ -86,3 +86,14 @@ func (this PermissionRoute) FindAllByPermissionId(permissionId int) ([]*Permissi
 
 	return permissionRoutes, err
 }
+
+//remove current name from database
+func (this *PermissionRoute) DeleteByPermissionId(permissionId int) (err error) {
+	if permissionId <= 0 {
+		return errors.New("权限ID不能为空")
+	}
+
+	o := orm.NewOrm()
+	_, err = o.Raw("delete from "+this.TableName()+" where permission_id=?", permissionId).Exec()
+	return err
+}

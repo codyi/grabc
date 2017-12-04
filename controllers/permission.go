@@ -100,7 +100,28 @@ func (this *PermissionController) Put() {
 }
 
 //permision view page
-func (this *PermissionController) View() {
+func (this *PermissionController) Get() {
+	permissionModel := models.Permission{}
+	permission_id := strings.TrimSpace(this.GetString("permission_id"))
+
+	if id, err := strconv.Atoi(permission_id); err == nil {
+		if err := permissionModel.FindById(id); err != nil {
+			this.AddErrorMessage("数据获取失败")
+		}
+	} else {
+		this.AddErrorMessage("数据不存在")
+	}
+
+	if permissionModel.IsNewRecord() {
+		this.AddErrorMessage("数据不存在")
+
+	}
+
+	this.htmlData["model"] = permissionModel
+	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
+	this.AddBreadcrumbs("查看", this.URLFor("PermissionController.Get", "permission_id", permission_id))
+	this.AddBreadcrumbs(permissionModel.Name, "")
+	this.ShowHtml(&permission.Get{})
 }
 
 //permision delete page

@@ -23,6 +23,7 @@ func (this *Index) Html() string {
                         <td>ID</td>
                         <td>权限名称</td>
                         <td>权限描述</td>
+                        <td>创建时间</td>
                         <td class="row_operate">操作</td>
                     </tr>
                 </thead>
@@ -32,6 +33,7 @@ func (this *Index) Html() string {
                         <td>{{$permission.Id}}</td>
                         <td>{{$permission.Name}}</td>
                         <td>{{$permission.Description}}</td>
+                        <td>{{unixTimeFormat $permission.CreateAt "2006-01-02"}}</td>
                         <td>
                             <a href="/permission/assignment?permission_id={{$permission.Id}}" title="授权">
                                 <span class="glyphicon glyphicon-eye-open"></span>

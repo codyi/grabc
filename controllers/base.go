@@ -47,7 +47,8 @@ func (this *BaseController) Prepare() {
 	this.controllerName = strings.ToLower(controlerName[0 : len(controlerName)-10])
 	this.actionName = strings.ToLower(actionName)
 	this.funcMap = template.FuncMap{
-		"pagination": libs.PaginationRender,
+		"pagination":     libs.PaginationRender,
+		"unixTimeFormat": libs.UnixTimeFormat,
 	}
 }
 

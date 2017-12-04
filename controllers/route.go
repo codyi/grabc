@@ -35,6 +35,7 @@ func (this *RouteController) Index() {
 
 	this.htmlData["notAddRoutes"] = notAddRoutes
 	this.htmlData["addRoutes"] = insertRoutes
+	this.AddBreadcrumbs("路由管理", this.URLFor("RouteController.Index"))
 	this.ShowHtml(&route.Index{})
 }
 

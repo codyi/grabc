@@ -26,10 +26,12 @@ type JsonData struct {
 type BaseController struct {
 	beego.Controller
 	libs.Alert
+	libs.Breadcrumbs
 	controllerName string
 	actionName     string
 	htmlData       map[interface{}]interface{}
 	funcMap        template.FuncMap
+	homeUrl        string
 }
 
 // redirect to url
@@ -58,7 +60,9 @@ func (this *BaseController) ShowHtml(html HtmlTemplate) {
 	}
 
 	var htmlContent bytes.Buffer
+	this.htmlData["homeUrl"] = this.homeUrl
 	this.htmlData["alert_messages"] = this.Alert
+	this.htmlData["breadcrumbs"] = this.Breadcrumbs.Items
 	tmpl.Execute(&htmlContent, this.htmlData)
 	this.Ctx.WriteString(htmlContent.String())
 	this.StopRun()

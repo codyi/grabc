@@ -35,6 +35,7 @@ func (this *PermissionController) Index() {
 	pagination.PageTotal = pageTotal
 	this.htmlData["permissions"] = permissions
 	this.htmlData["pages"] = pagination
+	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
 	this.ShowHtml(&permission.Index{})
 }
 
@@ -58,6 +59,8 @@ func (this *PermissionController) Add() {
 	}
 
 	this.htmlData["model"] = permissionModel
+	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
+	this.AddBreadcrumbs("新增", this.URLFor("PermissionController.Add"))
 	this.ShowHtml(&permission.Add{})
 }
 
@@ -90,6 +93,9 @@ func (this *PermissionController) Put() {
 	}
 
 	this.htmlData["model"] = permissionModel
+	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
+	this.AddBreadcrumbs("修改", this.URLFor("PermissionController.Put", "permission_id", permission_id))
+	this.AddBreadcrumbs(permissionModel.Name, "")
 	this.ShowHtml(&permission.Update{})
 }
 

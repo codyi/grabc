@@ -86,7 +86,27 @@ func (this *BaseTemplate) registerSelfJs() string {
 }
 
 func (this *BaseTemplate) DealHtml(html string) string {
-	return this.GetHeaderHtml() + `<div class="container content_warp">` + this.GetAlertHtml() + html + "</div>" + this.GetFooterHtml()
+	return this.GetHeaderHtml() + `<div class="container content_warp"><section class="content-header">
+  	<ul class="breadcrumb">
+	  <li>
+        <a href='{{.homeUrl}}'>
+          <span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span>
+          首页
+        </a>
+      </li>
+      {{range $breadcrumb := .breadcrumbs}}
+      <li>
+      	{{if eq $breadcrumb.Url ""}}
+          {{$breadcrumb.Label}}
+        {{else}}
+        <a href='{{$breadcrumb.Url}}'>
+          {{$breadcrumb.Label}}
+        </a>
+        {{end}}
+      </li>
+      {{end}}
+    </ul>
+  </section>` + this.GetAlertHtml() + html + "</div>" + this.GetFooterHtml()
 }
 
 func (this *BaseTemplate) GetHeaderHtml() string {

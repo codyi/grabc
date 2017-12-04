@@ -100,7 +100,7 @@ func (this *PermissionController) Put() {
 }
 
 //permision view page
-func (this *PermissionController) Get() {
+func (this *PermissionController) Assignment() {
 	permissionModel := models.Permission{}
 	permission_id := strings.TrimSpace(this.GetString("permission_id"))
 
@@ -119,15 +119,11 @@ func (this *PermissionController) Get() {
 
 	this.htmlData["model"] = permissionModel
 	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
-	this.AddBreadcrumbs("查看", this.URLFor("PermissionController.Get", "permission_id", permission_id))
+	this.AddBreadcrumbs("授权", this.URLFor("PermissionController.Get", "permission_id", permission_id))
 	this.AddBreadcrumbs(permissionModel.Name, "")
-	this.ShowHtml(&permission.Get{})
+	this.ShowHtml(&permission.Assignment{})
 }
 
 //permision delete page
 func (this *PermissionController) Delete() {
-}
-
-//permision assignment page
-func (this *PermissionController) Assignment() {
 }

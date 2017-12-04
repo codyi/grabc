@@ -16,6 +16,16 @@ func (this *Route) TableName() string {
 }
 
 //Find one user by phone from database
+func (this *Route) FindById(id int) error {
+	if id <= 0 {
+		return errors.New("id不能为空")
+	}
+
+	o := orm.NewOrm()
+	return o.QueryTable(this.TableName()).Filter("id", id).One(this)
+}
+
+//Find one user by phone from database
 func (this *Route) FindByRoute(route string) error {
 	if route == "" {
 		return errors.New("路由地址不能为空")
@@ -66,6 +76,20 @@ func (this Route) FindAll() ([]*Route, error) {
 	var routes []*Route
 	o := orm.NewOrm()
 	_, err := o.QueryTable(this.TableName()).All(&routes)
+
+	return routes, err
+}
+
+//retrieve all route
+func (this Route) FindAllByIds(routeIds []int) ([]*Route, error) {
+	var routes []*Route
+
+	if len(routeIds) == 0 {
+		return routes, errors.New("路由ID不能为空")
+	}
+
+	o := orm.NewOrm()
+	_, err := o.QueryTable(this.TableName()).Filter("id__in", routeIds).All(&routes)
 
 	return routes, err
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/astaxie/beego/utils"
 	"grabc/libs"
 	"grabc/models"
 	"grabc/views/permission"
@@ -117,11 +118,158 @@ func (this *PermissionController) Assignment() {
 
 	}
 
+	//获取已经授权的路由
+	routeModel := models.Route{}
+	permissionRouteModel := models.PermissionRoute{}
+	allPermissionRouteModels, err := permissionRouteModel.FindAllByPermissionId(permissionModel.Id)
+
+	if err != nil {
+		this.AddErrorMessage(err.Error())
+	}
+
+	var assignmentRoutes []string
+	if allPermissionRouteModels != nil {
+		var allPermissionRouteIds []int
+
+		for _, pr := range allPermissionRouteModels {
+			allPermissionRouteIds = append(allPermissionRouteIds, pr.RouteId)
+		}
+
+		prs, _ := routeModel.FindAllByIds(allPermissionRouteIds)
+
+		if prs != nil {
+			for _, r := range prs {
+				assignmentRoutes = append(assignmentRoutes, r.Route)
+			}
+		}
+	}
+
+	//获取全部可以授权的路由
+	routes, _ := routeModel.FindAll()
+	var allRoutes []string
+
+	if routes != nil {
+		for _, route := range routes {
+			if !utils.InSlice(route.Route, assignmentRoutes) {
+				allRoutes = append(allRoutes, route.Route)
+			}
+		}
+	}
+
 	this.htmlData["model"] = permissionModel
+	this.htmlData["allRoutes"] = allRoutes
+	this.htmlData["assignmentRoutes"] = assignmentRoutes
 	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
-	this.AddBreadcrumbs("授权", this.URLFor("PermissionController.Get", "permission_id", permission_id))
+	this.AddBreadcrumbs("授权", this.URLFor("PermissionController.Assignment", "permission_id", permission_id))
 	this.AddBreadcrumbs(permissionModel.Name, "")
 	this.ShowHtml(&permission.Assignment{})
+}
+
+//route permission ajax add page
+func (this *PermissionController) AssignmentRoute() {
+	data := JsonData{}
+
+	if this.isPost() {
+		route := strings.TrimSpace(this.GetString("route"))
+		permissionId := strings.TrimSpace(this.GetString("permissionId"))
+
+		routeModel := models.Route{}
+		permissionRouteModel := models.PermissionRoute{}
+
+		if route != "" {
+			routeModel.FindByRoute(route)
+
+			if routeModel.Id > 0 {
+				permissionRouteModel.RouteId = routeModel.Id
+			} else {
+				data.Code = 400
+				data.Message = "路由不存在"
+				this.ShowJSON(&data)
+			}
+		} else {
+			data.Code = 400
+			data.Message = "路由不能为空"
+			this.ShowJSON(&data)
+		}
+
+		if i, err := strconv.Atoi(permissionId); err == nil {
+			permissionRouteModel.PermissionId = i
+		} else {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+		}
+
+		if isInsert, err := permissionRouteModel.Insert(); isInsert {
+			data.Code = 200
+			data.Message = "添加成功"
+			data.Data = make(map[string]interface{})
+			data.Data["route"] = routeModel.Route
+		} else {
+			data.Code = 400
+			data.Message = err.Error()
+		}
+
+	} else {
+		data.Code = 400
+		data.Message = "非法请求"
+	}
+
+	this.ShowJSON(&data)
+}
+
+//route permission ajax add page
+func (this *PermissionController) RemoveRoute() {
+	data := JsonData{}
+
+	if this.isPost() {
+		param_route := strings.TrimSpace(this.GetString("route"))
+		param_permision_id := strings.TrimSpace(this.GetString("permissionId"))
+		permissionRouteModel := models.PermissionRoute{}
+
+		var int_param_route_id, int_param_permission_id int
+		routeModel := models.Route{}
+
+		if param_route != "" {
+			routeModel.FindByRoute(param_route)
+
+			if routeModel.Id > 0 {
+				int_param_route_id = routeModel.Id
+			} else {
+				data.Code = 400
+				data.Message = "路由不存在"
+				this.ShowJSON(&data)
+			}
+		} else {
+			data.Code = 400
+			data.Message = "路由不能为空"
+			this.ShowJSON(&data)
+		}
+
+		if id, err := strconv.Atoi(param_permision_id); err != nil {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+		} else {
+			int_param_permission_id = id
+		}
+
+		if is_delete, err := permissionRouteModel.Delete(int_param_route_id, int_param_permission_id); is_delete {
+			data.Code = 200
+			data.Message = "删除成功"
+			data.Data = make(map[string]interface{})
+			data.Data["route"] = routeModel.Route
+		} else {
+			data.Code = 400
+			data.Message = err.Error()
+		}
+
+	} else {
+		data.Code = 400
+		data.Message = "非法请求"
+	}
+
+	this.ShowJSON(&data)
 }
 
 //permision delete page

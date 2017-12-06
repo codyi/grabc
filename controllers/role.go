@@ -26,7 +26,7 @@ func (this *RoleController) Index() {
 		pagination.PageIndex = 1
 	}
 
-	roles, pageTotal, err := models.Role{}.FindAll(pagination.PageIndex, pagination.PageCount)
+	roles, pageTotal, err := models.Role{}.List(pagination.PageIndex, pagination.PageCount)
 
 	if err != nil {
 		this.AddErrorMessage(err.Error())

@@ -93,7 +93,7 @@ func (this Role) DeleteByName(name string) (isDelete bool, err error) {
 }
 
 //retrieve all Roles
-func (this Role) FindAll(pageIndex, pageCount int) ([]*Role, int, error) {
+func (this Role) List(pageIndex, pageCount int) ([]*Role, int, error) {
 	var Roles []*Role
 	var total int64
 	o := orm.NewOrm()
@@ -117,4 +117,13 @@ func (this *Role) Delete() (isDelete bool, err error) {
 	num, err := o.Delete(this)
 
 	return num > 0, err
+}
+
+//retrieve all Roles
+func (this Role) FindAll() []*Role {
+	var roles []*Role
+	o := orm.NewOrm()
+	o.QueryTable(this.TableName()).All(&roles)
+
+	return roles
 }

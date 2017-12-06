@@ -40,7 +40,7 @@ func registerGloablJs() string {
 }
 
 func init() {
-	GloablCssAppend("https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css", "http://127.0.0.1:8080/static/html/global.css")
+	GloablCssAppend("https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css", "http://127.0.0.1:8080/static/html/global.css?v=1")
 	GloablJsAppend("https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js", "https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js", "http://127.0.0.1:8080/static/html/global.js")
 }
 
@@ -129,7 +129,7 @@ func (this *BaseTemplate) GetHeaderHtml() string {
           	<a href="/route/index">路由管理</a></li>
           <li><a href="/permission/index">权限管理</a></li>
           <li><a href="/role/index">角色管理</a></li>
-          <li><a href="/assignment/index">角色分配</a></li>
+          <li><a href="/assignment/index">用户授权</a></li>
         </ul>
       </div>
     </div>

@@ -120,22 +120,22 @@ func (this *PermissionController) Assignment() {
 
 	//获取已经授权的路由
 	routeModel := models.Route{}
-	permissionRouteModel := models.PermissionRoute{}
-	allPermissionRouteModels, err := permissionRouteModel.FindAllByPermissionId(permissionModel.Id)
+	permissionAssignmentModel := models.PermissionAssignment{}
+	allPermissionAssignmentModels, err := permissionAssignmentModel.FindAllByPermissionId(permissionModel.Id)
 
 	if err != nil {
 		this.AddErrorMessage(err.Error())
 	}
 
 	var assignmentRoutes []string
-	if allPermissionRouteModels != nil {
-		var allPermissionRouteIds []int
+	if allPermissionAssignmentModels != nil {
+		var allPermissionAssignmentIds []int
 
-		for _, pr := range allPermissionRouteModels {
-			allPermissionRouteIds = append(allPermissionRouteIds, pr.RouteId)
+		for _, pr := range allPermissionAssignmentModels {
+			allPermissionAssignmentIds = append(allPermissionAssignmentIds, pr.RouteId)
 		}
 
-		prs, _ := routeModel.FindAllByIds(allPermissionRouteIds)
+		prs, _ := routeModel.FindAllByIds(allPermissionAssignmentIds)
 
 		if prs != nil {
 			for _, r := range prs {
@@ -174,13 +174,13 @@ func (this *PermissionController) AssignmentRoute() {
 		permissionId := strings.TrimSpace(this.GetString("permissionId"))
 
 		routeModel := models.Route{}
-		permissionRouteModel := models.PermissionRoute{}
+		permissionAssignmentModel := models.PermissionAssignment{}
 
 		if route != "" {
 			routeModel.FindByRoute(route)
 
 			if routeModel.Id > 0 {
-				permissionRouteModel.RouteId = routeModel.Id
+				permissionAssignmentModel.RouteId = routeModel.Id
 			} else {
 				data.Code = 400
 				data.Message = "路由不存在"
@@ -195,7 +195,7 @@ func (this *PermissionController) AssignmentRoute() {
 		}
 
 		if i, err := strconv.Atoi(permissionId); err == nil {
-			permissionRouteModel.PermissionId = i
+			permissionAssignmentModel.PermissionId = i
 		} else {
 			data.Code = 400
 			data.Message = err.Error()
@@ -203,7 +203,7 @@ func (this *PermissionController) AssignmentRoute() {
 			return
 		}
 
-		if isInsert, err := permissionRouteModel.Insert(); isInsert {
+		if isInsert, err := permissionAssignmentModel.Insert(); isInsert {
 			data.Code = 200
 			data.Message = "添加成功"
 			data.Data = make(map[string]interface{})
@@ -228,7 +228,7 @@ func (this *PermissionController) RemoveRoute() {
 	if this.isPost() {
 		param_route := strings.TrimSpace(this.GetString("route"))
 		param_permision_id := strings.TrimSpace(this.GetString("permissionId"))
-		permissionRouteModel := models.PermissionRoute{}
+		permissionAssignmentModel := models.PermissionAssignment{}
 
 		var int_param_route_id, int_param_permission_id int
 		routeModel := models.Route{}
@@ -260,7 +260,7 @@ func (this *PermissionController) RemoveRoute() {
 			int_param_permission_id = id
 		}
 
-		if is_delete, err := permissionRouteModel.Delete(int_param_route_id, int_param_permission_id); is_delete {
+		if is_delete, err := permissionAssignmentModel.Delete(int_param_route_id, int_param_permission_id); is_delete {
 			data.Code = 200
 			data.Message = "删除成功"
 			data.Data = make(map[string]interface{})
@@ -299,8 +299,8 @@ func (this *PermissionController) Delete() {
 			return
 		}
 
-		permissionRouteModel := models.PermissionRoute{}
-		err = permissionRouteModel.DeleteByPermissionId(permissionModel.Id)
+		permissionAssignmentModel := models.PermissionAssignment{}
+		err = permissionAssignmentModel.DeleteByPermissionId(permissionModel.Id)
 
 		if err != nil {
 			data.Code = 400

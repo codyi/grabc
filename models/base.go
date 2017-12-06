@@ -7,7 +7,7 @@ import (
 func init() {
 	orm.RegisterModel(new(Route))
 	orm.RegisterModel(new(Permission))
-	orm.RegisterModel(new(PermissionRoute))
+	orm.RegisterModel(new(PermissionAssignment))
 	orm.RegisterModel(new(Role))
 }
 

@@ -1,7 +1,6 @@
 package grabc
 
 import (
-	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/utils"
 	"grabc/controllers"
@@ -35,7 +34,6 @@ func init() {
 	beego.AutoRouter(&controllers.PermissionController{})
 	beego.AutoRouter(&controllers.AssignmentController{})
 
-	RegisterController(&controllers.RouteController{}, &controllers.RoleController{}, &controllers.PermissionController{}, &controllers.AssignmentController{})
 	libs.RegisterControllers = &registerControllers
 	models.UserModel = &userModel
 	ignoreRoutes = make(map[string][]string, 0)
@@ -88,9 +86,7 @@ func CheckAccess(controllerName, routeName string) bool {
 
 	controllerName = strings.ToLower(controllerName)
 	routeName = strings.ToLower(routeName)
-	fmt.Println(controllerName)
-	fmt.Println(routeName)
-	fmt.Println(allAccessRoutes)
+
 	if allAccessRoutes[controllerName] != nil {
 		if utils.InSlice(routeName, allAccessRoutes[controllerName]) {
 			return true

@@ -40,7 +40,7 @@ func AllRoutes() []string {
 	}
 
 	var routes []string
-
+	routes = append(routes, "*/*")
 	//遍历注册的控制器，获取器方法
 	for _, controller := range *RegisterControllers {
 		reflectVal := reflect.ValueOf(controller)

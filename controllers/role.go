@@ -97,10 +97,146 @@ func (this *RoleController) Put() {
 	this.ShowHtml(&role.Put{})
 }
 
-func (this *RoleController) Get() {
-	this.ShowHtml(&role.Get{})
+//授权展示页面
+func (this *RoleController) Assignment() {
+	roleModel := models.Role{}
+	role_id := strings.TrimSpace(this.GetString("role_id"))
+
+	if id, err := strconv.Atoi(role_id); err == nil {
+		if err := roleModel.FindById(id); err != nil {
+			this.AddErrorMessage("数据获取失败")
+		}
+	} else {
+		this.AddErrorMessage("数据不存在")
+	}
+
+	//获取全部权限
+	allPermissions, err := models.Permission{}.FindAll()
+	if err != nil {
+		this.AddErrorMessage(err.Error())
+	}
+
+	//获取已经授权的权限关系
+	allPermissionAssignments, err := models.PermissionAssignment{}.FindAllByRoleId(roleModel.Id)
+
+	if err != nil {
+		this.AddErrorMessage(err.Error())
+	}
+
+	var assignmentPermssionNames, unassignmentPermssionNames []string
+	for _, p := range allPermissions {
+		isFound := false
+		for _, pa := range allPermissionAssignments {
+			if p.Id == pa.PermissionId {
+				isFound = true
+				assignmentPermssionNames = append(assignmentPermssionNames, p.Name)
+				break
+			}
+		}
+
+		if !isFound {
+			unassignmentPermssionNames = append(unassignmentPermssionNames, p.Name)
+		}
+	}
+
+	this.htmlData["model"] = roleModel
+	this.htmlData["unassignmentPermssionNames"] = unassignmentPermssionNames
+	this.htmlData["assignmentPermssionNames"] = assignmentPermssionNames
+	this.AddBreadcrumbs("角色管理", this.URLFor("RoleController.Index"))
+	this.AddBreadcrumbs("权限授权", this.URLFor("RoleController.Assignment", "role_id", role_id))
+	this.AddBreadcrumbs(roleModel.Name, "")
+	this.ShowHtml(&role.Assignment{})
 }
 
-func (this *RoleController) Delete() {
-	this.ShowHtml(&role.Delete{})
+//ajax-权限授权给角色
+func (this *RoleController) AjaxAssignment() {
+	data := JsonData{}
+
+	if this.isPost() {
+		paramPermissionName := strings.TrimSpace(this.GetString("permission_name"))
+		paramRoleId := strings.TrimSpace(this.GetString("role_id"))
+
+		permissionModel := models.Permission{}
+		if err := permissionModel.FindByName(paramPermissionName); err != nil {
+			data.Code = 400
+			data.Message = "权限不能为空"
+			this.ShowJSON(&data)
+			return
+		}
+
+		var intRoleId int
+		if id, err := strconv.Atoi(paramRoleId); err != nil {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+			return
+		} else {
+			intRoleId = id
+		}
+
+		perAssignmentModel := models.PermissionAssignment{}
+		perAssignmentModel.RoleId = intRoleId
+		perAssignmentModel.PermissionId = permissionModel.Id
+		if isInsert, err := perAssignmentModel.Insert(); isInsert {
+			data.Code = 200
+			data.Message = "授权成功"
+		} else {
+			data.Code = 400
+			data.Message = err.Error()
+		}
+
+	} else {
+		data.Code = 400
+		data.Message = "非法请求"
+	}
+
+	this.ShowJSON(&data)
+}
+
+//ajax-角色取消权限
+func (this *RoleController) AjaxUnassignment() {
+	data := JsonData{}
+
+	if this.isPost() {
+		paramPermissionName := strings.TrimSpace(this.GetString("permission_name"))
+		paramRoleId := strings.TrimSpace(this.GetString("role_id"))
+
+		permissionModel := models.Permission{}
+		if err := permissionModel.FindByName(paramPermissionName); err != nil {
+			data.Code = 400
+			data.Message = "权限不能为空"
+			this.ShowJSON(&data)
+			return
+		}
+
+		var intRoleId int
+		if id, err := strconv.Atoi(paramRoleId); err != nil {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+			return
+		} else {
+			intRoleId = id
+		}
+
+		perAssignmentModel := models.PermissionAssignment{}
+		if is_delete, err := perAssignmentModel.Delete(intRoleId, permissionModel.Id); err == nil {
+			if is_delete {
+				data.Code = 200
+				data.Message = "删除成功"
+			} else {
+				data.Code = 400
+				data.Message = err.Error()
+			}
+		} else {
+			data.Code = 400
+			data.Message = err.Error()
+		}
+
+	} else {
+		data.Code = 400
+		data.Message = "非法请求"
+	}
+
+	this.ShowJSON(&data)
 }

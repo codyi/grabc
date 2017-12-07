@@ -92,8 +92,8 @@ func (this Permission) DeleteByName(name string) (isDelete bool, err error) {
 	return num > 0, err
 }
 
-//retrieve all permissions
-func (this Permission) FindAll(pageIndex, pageCount int) ([]*Permission, int, error) {
+//list permissions
+func (this Permission) List(pageIndex, pageCount int) ([]*Permission, int, error) {
 	var permissions []*Permission
 	var total int64
 	o := orm.NewOrm()
@@ -105,6 +105,19 @@ func (this Permission) FindAll(pageIndex, pageCount int) ([]*Permission, int, er
 
 	total, err = o.QueryTable(this.TableName()).Count()
 	return permissions, int(total), err
+}
+
+//retrieve all permissions
+func (this Permission) FindAll() ([]*Permission, error) {
+	var permissions []*Permission
+	o := orm.NewOrm()
+	_, err := o.QueryTable(this.TableName()).All(&permissions)
+
+	if err != nil {
+		return permissions, err
+	}
+
+	return permissions, err
 }
 
 //remove current name from database

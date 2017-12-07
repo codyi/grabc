@@ -1,10 +1,13 @@
 package grabc
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/utils"
 	"grabc/controllers"
 	"grabc/libs"
 	"grabc/models"
+	"strings"
 )
 
 //用于定义用户接口
@@ -21,13 +24,8 @@ var identify IUserIdentify
 //用于保存外部注册的用户模型实例
 var userModel models.IUserModel
 
-//忽律检查的网址
-type ignoreRoute struct {
-	Controller string
-	Route      string
-}
-
-var ignoreRoutes []ignoreRoute
+//忽律检查权限的网址
+var ignoreRoutes map[string][]string
 
 //init function
 func init() {
@@ -40,7 +38,7 @@ func init() {
 	RegisterController(&controllers.RouteController{}, &controllers.RoleController{}, &controllers.PermissionController{}, &controllers.AssignmentController{})
 	libs.RegisterControllers = &registerControllers
 	models.UserModel = &userModel
-	ignoreRoutes = make([]ignoreRoute, 0)
+	ignoreRoutes = make(map[string][]string, 0)
 }
 
 //注册需要检查的routes
@@ -62,23 +60,49 @@ func RegisterUserModel(m models.IUserModel) {
 
 //增加忽律检查的地址，例如site/login,这个就不需要检查权限
 func AppendIgnoreRoute(c, r string) {
-	i := ignoreRoute{}
-	i.Controller = c
-	i.Route = r
-	ignoreRoutes = append(ignoreRoutes, i)
+	if ignoreRoutes[c] == nil {
+		ignoreRoutes[c] = make([]string, 0)
+	}
+
+	ignoreRoutes[c] = append(ignoreRoutes[c], r)
 }
 
 //权限检查
 func CheckAccess(controllerName, routeName string) bool {
-	//先检查是否在忽律的路由中
-	if len(ignoreRoutes) > 0 {
-		// for _, ignoreRoute := range ignoreRoutes {
-		// 	return true
-		// }
+	allAccessRoutes := make(map[string][]string, 0)
+
+	if identify.GetId() > 0 {
+		allAccessRoutes = models.Route{}.ListByUserId(identify.GetId())
 	}
 
-	if identify.GetId() <= 0 {
-		return false
+	for controller, routes := range ignoreRoutes {
+		if allAccessRoutes[controller] == nil {
+			allAccessRoutes[controller] = routes
+		} else {
+			for _, r := range routes {
+				allAccessRoutes[controller] = append(allAccessRoutes[controller], r)
+			}
+		}
+
+	}
+
+	controllerName = strings.ToLower(controllerName)
+	routeName = strings.ToLower(routeName)
+	fmt.Println(controllerName)
+	fmt.Println(routeName)
+	fmt.Println(allAccessRoutes)
+	if allAccessRoutes[controllerName] != nil {
+		if utils.InSlice(routeName, allAccessRoutes[controllerName]) {
+			return true
+		}
+
+		if utils.InSlice("*", allAccessRoutes[controllerName]) {
+			return true
+		}
+	}
+
+	if allAccessRoutes["*"] != nil {
+		return true
 	}
 
 	return false

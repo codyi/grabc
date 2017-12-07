@@ -35,7 +35,7 @@ func (this *Index) Html() string {
                             <td>{{$role.Description}}</td>
                             <td>{{unixTimeFormat $role.CreateAt "2006-01-02"}}</td>
                             <td>
-                                <a href="/role/get?role_id={{$role.Id}}" title="授权">
+                                <a href="/role/assignment?role_id={{$role.Id}}" title="授权">
                                     <span class="glyphicon glyphicon-eye-open"></span>
                                 </a>
                                 <a href="/role/put?role_id={{$role.Id}}" title="更新">

@@ -49,18 +49,18 @@ func AllRoutes() []string {
 		controllerName := strings.TrimSuffix(ct.Name(), "Controller")
 
 		//* 是一个特殊的权限，代表这个控制器下全部的权限
-		routes = append(routes, strings.ToLower("/"+controllerName+"/*"))
+		routes = append(routes, strings.ToLower(controllerName+"/*"))
 
 		for i := 0; i < rt.NumMethod(); i++ {
 			if rt.Method(i).Name == "RABCMethods" {
 				result := reflectVal.MethodByName("RABCMethods").Call([]reflect.Value{})
 				for _, routeSlice := range result {
 					for _, v := range routeSlice.Interface().([]string) {
-						routes = append(routes, strings.ToLower("/"+controllerName+"/"+v))
+						routes = append(routes, strings.ToLower(controllerName+"/"+v))
 					}
 				}
 			} else if !utils.InSlice(rt.Method(i).Name, exceptMethods) && !utils.InSlice(rt.Method(i).Name, tempMethods) {
-				routes = append(routes, strings.ToLower("/"+controllerName+"/"+rt.Method(i).Name))
+				routes = append(routes, strings.ToLower(controllerName+"/"+rt.Method(i).Name))
 			}
 
 		}

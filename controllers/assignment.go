@@ -34,8 +34,37 @@ func (this *AssignmentController) Index() {
 		this.AddErrorMessage(err.Error())
 	}
 
+	//查找用户对应的角色，并获取角色名称
+	var userIds []int
+	for id, _ := range userList {
+		userIds = append(userIds, id)
+	}
+
+	type userData struct {
+		Id        int
+		Name      string
+		RoleNames []string
+	}
+
+	var userItems []userData
+	roleAssignmentModel := models.RoleAssignment{}
+	roleModel := models.Role{}
+
+	for id, name := range userList {
+		u := userData{}
+		u.Id = id
+		u.Name = name
+
+		roleIds, err := roleAssignmentModel.FindRoleIdsByUserId(u.Id)
+		if err == nil && len(roleIds) > 0 {
+			u.RoleNames, _ = roleModel.ListNamesByIds(roleIds)
+		}
+
+		userItems = append(userItems, u)
+	}
+
 	pagination.PageTotal = pageTotal
-	this.htmlData["userList"] = userList
+	this.htmlData["userItems"] = userItems
 	this.htmlData["pages"] = pagination
 	this.AddBreadcrumbs("授权管理", this.URLFor("AssignmentController.Index"))
 	this.ShowHtml(&assignment.Index{})
@@ -83,8 +112,120 @@ func (this *AssignmentController) User() {
 	}
 
 	this.htmlData["name"] = user_name
+	this.htmlData["user_id"] = user_id
 	this.htmlData["assignmentRoles"] = assignmentRoles
 	this.htmlData["unassignmentRoles"] = unassignmentRoles
 	this.AddBreadcrumbs("用户授权", this.URLFor("AssignmentController.Index"))
 	this.ShowHtml(&assignment.User{})
+}
+
+func (this *AssignmentController) Add() {
+	data := JsonData{}
+
+	if this.isPost() {
+		param_role := strings.TrimSpace(this.GetString("role"))
+		param_user_id := strings.TrimSpace(this.GetString("user_id"))
+
+		var int_param_user_id int
+		roleModel := models.Role{}
+
+		if param_role != "" {
+			roleModel.FindByName(param_role)
+
+			if roleModel.Id <= 0 {
+				data.Code = 400
+				data.Message = "角色不存在"
+				this.ShowJSON(&data)
+				return
+			}
+		} else {
+			data.Code = 400
+			data.Message = "角色不能为空"
+			this.ShowJSON(&data)
+			return
+		}
+
+		if id, err := strconv.Atoi(param_user_id); err != nil {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+			return
+		} else {
+			int_param_user_id = id
+		}
+
+		roleAssignmentModel := models.RoleAssignment{}
+		roleAssignmentModel.UserId = int_param_user_id
+		roleAssignmentModel.RoleId = roleModel.Id
+		if isInsert, err := roleAssignmentModel.Insert(); isInsert {
+			data.Code = 200
+			data.Message = "授权成功"
+		} else {
+			data.Code = 400
+			data.Message = err.Error()
+		}
+
+	} else {
+		data.Code = 400
+		data.Message = "非法请求"
+	}
+
+	this.ShowJSON(&data)
+}
+
+func (this *AssignmentController) Remove() {
+	data := JsonData{}
+
+	if this.isPost() {
+		param_role := strings.TrimSpace(this.GetString("role"))
+		param_user_id := strings.TrimSpace(this.GetString("user_id"))
+
+		var int_param_user_id int
+		roleModel := models.Role{}
+
+		if param_role != "" {
+			roleModel.FindByName(param_role)
+
+			if roleModel.Id <= 0 {
+				data.Code = 400
+				data.Message = "角色不存在"
+				this.ShowJSON(&data)
+				return
+			}
+		} else {
+			data.Code = 400
+			data.Message = "角色不能为空"
+			this.ShowJSON(&data)
+			return
+		}
+
+		if id, err := strconv.Atoi(param_user_id); err != nil {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+			return
+		} else {
+			int_param_user_id = id
+		}
+
+		roleAssignmentModel := models.RoleAssignment{}
+		if err := roleAssignmentModel.FindByRoleIdAndUserId(roleModel.Id, int_param_user_id); err == nil {
+			if is_delete, err := roleAssignmentModel.Delete(); is_delete {
+				data.Code = 200
+				data.Message = "取消授权成功"
+			} else {
+				data.Code = 400
+				data.Message = err.Error()
+			}
+		} else {
+			data.Code = 400
+			data.Message = err.Error()
+		}
+
+	} else {
+		data.Code = 400
+		data.Message = "非法请求"
+	}
+
+	this.ShowJSON(&data)
 }

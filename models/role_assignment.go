@@ -28,18 +28,31 @@ func (this *RoleAssignment) Insert() (isInsert bool, err error) {
 	}
 
 	self := &RoleAssignment{}
-	o := orm.NewOrm()
-	o.QueryTable(this.TableName()).Filter("role_id", this.RoleId).Filter("user_id", this.UserId).One(self)
+	self.FindByRoleIdAndUserId(this.RoleId, this.UserId)
 
 	if self.Id > 0 {
 		return false, errors.New("角色和用户已经绑定")
 	}
 
 	this.CreateAt = int32(time.Now().Unix())
-
+	o := orm.NewOrm()
 	id, err := o.Insert(this)
 
 	return id > 0, err
+}
+
+//根据用户ID，角色ID查找数据
+func (this *RoleAssignment) FindByRoleIdAndUserId(roleId, userId int) error {
+	if roleId <= 0 {
+		return errors.New("角色ID不能为空")
+	}
+
+	if userId <= 0 {
+		return errors.New("用户ID不能为空")
+	}
+
+	o := orm.NewOrm()
+	return o.QueryTable(this.TableName()).Filter("role_id", roleId).Filter("user_id", userId).One(this)
 }
 
 //remove current data from database

@@ -127,3 +127,25 @@ func (this Role) FindAll() []*Role {
 
 	return roles
 }
+
+//获取传入角色id的名称
+func (this Role) ListNamesByIds(ids []int) ([]string, error) {
+	var roles []*Role
+	var names []string
+	if len(ids) == 0 {
+		return names, errors.New("角色ID不能为空")
+	}
+
+	o := orm.NewOrm()
+	_, err := o.QueryTable(this.TableName()).Filter("id__in", ids).All(&roles)
+
+	if err != nil {
+		return names, err
+	}
+
+	for _, r := range roles {
+		names = append(names, r.Name)
+	}
+
+	return names, nil
+}

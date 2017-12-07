@@ -38,7 +38,7 @@ func (this *User) Html() string {
                 </tr>
             </tbody>
         </table>
-        <input type="hidden" name="permission_id" id="permission_id" value="{{.model.Id}}">
+        <input type="hidden" name="user_id" id="user_id" value="{{.user_id}}">
     </div>
 </div>
 <script>

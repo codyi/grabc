@@ -22,16 +22,22 @@ func (this *Index) Html() string {
                     <tr>
                         <td>用户</td>
                         <td>用户姓名</td>
-                        <td class="row_operate">授权</td>
+                        <td>已授权</td>
+                        <td class="row_operate">操作</td>
                     </tr>
                 </thead>
                 <tbody>
-                {{range $id,$name:=.userList}}
+                {{range $id,$user:=.userItems}}
                     <tr>
-                        <td>{{$id}}</td>
-                        <td>{{$name}}</td>
+                        <td>{{$user.Id}}</td>
+                        <td>{{$user.Name}}</td>
                         <td>
-                            <a href="/assignment/user?user_id={{$id}}" title="授权">
+                        {{range $index,$roleName:=$user.RoleNames}}
+                        【{{$roleName}}】&nbsp;
+                        {{end}}
+                        </td>
+                        <td>
+                            <a href="/assignment/user?user_id={{$user.Id}}" title="授权">
                                 <span class="glyphicon glyphicon-eye-open"></span>
                             </a>
                         </td>

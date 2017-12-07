@@ -1,4 +1,5 @@
-## GRABC
+## GRABC 
+[![Go Report Card](https://goreportcard.com/report/github.com/codyi/grabc)](https://goreportcard.com/report/github.com/codyi/grabc)
 GRABC 是一个beego权限管理插件，插件分为路由、权限、角色。将路由分配给权限，权限授给角色，角色授给用户~~
 
 ###### 详情 [grabc.liguosong.com](http://grabc.liguosong.com)

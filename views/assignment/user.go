@@ -9,6 +9,7 @@ type User struct {
 }
 
 func (this *User) Html() string {
+	this.SelfJsAppend("http://127.0.0.1:8080/static/html/role_assignment.js")
 	html := `
 <div class="box box-info">
     <div class="box-header">
@@ -19,19 +20,19 @@ func (this *User) Html() string {
             <tbody>
                 <tr>
                     <td style="width: 40%">
-                        <select multiple="" size="20" id="all_route">
+                        <select multiple="" size="20" id="unassignment_role">
                         </select>
                     </td>
                     <td>
                         <div>
-                            <button id="add_route" class="btn btn-primary">>>添加</button>
+                            <button id="add_role" class="btn btn-primary">>>添加</button>
                         </div>
                         <div style="margin-top: 15px">
-                            <button id="remove_route" class="btn btn-danger"><<删除</button>
+                            <button id="remove_role" class="btn btn-danger"><<删除</button>
                         </div>
                     </td>
                     <td style="width: 40%">
-                        <select multiple="" size="20" id="assignment_route">
+                        <select multiple="" size="20" id="assignment_role">
                         </select>
                     </td>
                 </tr>
@@ -40,6 +41,16 @@ func (this *User) Html() string {
         <input type="hidden" name="permission_id" id="permission_id" value="{{.model.Id}}">
     </div>
 </div>
+<script>
+    var unassignmentRoles = new Array();
+    var assignmentRoles = new Array();
+    {{range $index,$role := .unassignmentRoles}}
+    unassignmentRoles.push("{{$role}}")
+    {{end}}
+    {{range $index,$role := .assignmentRoles}}
+    assignmentRoles.push("{{$role}}")
+    {{end}}
+</script>
 `
 	return this.DealHtml(html)
 }

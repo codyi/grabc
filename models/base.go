@@ -9,6 +9,7 @@ func init() {
 	orm.RegisterModel(new(Permission))
 	orm.RegisterModel(new(PermissionAssignment))
 	orm.RegisterModel(new(Role))
+	orm.RegisterModel(new(RoleAssignment))
 }
 
 type BaseModel struct {

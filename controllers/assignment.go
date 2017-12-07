@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/astaxie/beego/utils"
 	"grabc/libs"
 	"grabc/models"
 	"grabc/views/assignment"
@@ -18,7 +19,7 @@ func (this *AssignmentController) Index() {
 
 	//分页设置
 	pagination := libs.Pagination{}
-	pagination.PageCount = 1
+	pagination.PageCount = 20
 	pagination.Url = this.URLFor("AssignmentController.Index")
 
 	if s, err := strconv.Atoi(page_index); err == nil {
@@ -65,23 +66,25 @@ func (this *AssignmentController) User() {
 		this.AddErrorMessage(err.Error())
 	}
 
-	assignmentRoles := make([]*models.Role, 0)    //已经授权的角色
-	notAssignmentRoles := make([]*models.Role, 0) //未授权的角色
+	var assignmentRoles []string   //已经授权的角色
+	var unassignmentRoles []string //未授权的角色
 
 	//分离用户授权和未授权的角色
 	for _, role := range allRoles {
 		for _, roleId := range allAssignmentRoleIds {
 			if role.Id == roleId {
-				assignmentRoles = append(assignmentRoles, role)
-			} else {
-				notAssignmentRoles = append(notAssignmentRoles, role)
+				assignmentRoles = append(assignmentRoles, role.Name)
 			}
+		}
+
+		if !utils.InSlice(role.Name, assignmentRoles) {
+			unassignmentRoles = append(unassignmentRoles, role.Name)
 		}
 	}
 
 	this.htmlData["name"] = user_name
 	this.htmlData["assignmentRoles"] = assignmentRoles
-	this.htmlData["notAssignmentRoles"] = notAssignmentRoles
+	this.htmlData["unassignmentRoles"] = unassignmentRoles
 	this.AddBreadcrumbs("用户授权", this.URLFor("AssignmentController.Index"))
 	this.ShowHtml(&assignment.User{})
 }

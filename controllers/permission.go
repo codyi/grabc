@@ -166,7 +166,7 @@ func (this *PermissionController) Assignment() {
 }
 
 //route permission ajax add page
-func (this *PermissionController) AssignmentRoute() {
+func (this *PermissionController) AjaxAddRoute() {
 	data := JsonData{}
 
 	if this.isPost() {
@@ -222,7 +222,7 @@ func (this *PermissionController) AssignmentRoute() {
 }
 
 //route permission ajax add page
-func (this *PermissionController) RemoveRoute() {
+func (this *PermissionController) AjaxRemoveRoute() {
 	data := JsonData{}
 
 	if this.isPost() {

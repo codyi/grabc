@@ -3,7 +3,7 @@ package controllers
 import (
 	"bytes"
 	"github.com/astaxie/beego"
-	"github.com/grabc/libs"
+	"github.com/codyi/grabc/libs"
 	"strings"
 	"text/template"
 )

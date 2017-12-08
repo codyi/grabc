@@ -1,7 +1,7 @@
 package route
 
 import (
-	. "github.com/grabc/views/layout"
+	. "github.com/codyi/grabc/views/layout"
 )
 
 type Index struct {

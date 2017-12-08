@@ -2,7 +2,7 @@ package libs
 
 import (
 	"github.com/astaxie/beego/utils"
-	"github.com/grabc/models"
+	"github.com/codyi/grabc/models"
 	"strings"
 )
 

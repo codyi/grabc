@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"github.com/astaxie/beego/utils"
-	"github.com/grabc/libs"
-	"github.com/grabc/models"
-	"github.com/grabc/views/permission"
+	"github.com/codyi/grabc/libs"
+	"github.com/codyi/grabc/models"
+	"github.com/codyi/grabc/views/permission"
 	"strconv"
 	"strings"
 )

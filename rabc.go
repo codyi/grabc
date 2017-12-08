@@ -2,9 +2,9 @@ package grabc
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/grabc/controllers"
-	"github.com/grabc/libs"
-	"github.com/grabc/models"
+	"github.com/codyi/grabc/controllers"
+	"github.com/codyi/grabc/libs"
+	"github.com/codyi/grabc/models"
 )
 
 //init function

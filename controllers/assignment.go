@@ -119,7 +119,7 @@ func (this *AssignmentController) User() {
 	this.ShowHtml(&assignment.User{})
 }
 
-func (this *AssignmentController) Add() {
+func (this *AssignmentController) AjaxAdd() {
 	data := JsonData{}
 
 	if this.isPost() {
@@ -173,7 +173,7 @@ func (this *AssignmentController) Add() {
 	this.ShowJSON(&data)
 }
 
-func (this *AssignmentController) Remove() {
+func (this *AssignmentController) AjaxRemove() {
 	data := JsonData{}
 
 	if this.isPost() {

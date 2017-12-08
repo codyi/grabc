@@ -71,7 +71,7 @@ func (this *User) Html() string {
                 $(select_values).each(function (index, value) {
                     $.ajax({
                         type:"post",
-                        url:"/assignment/add",
+                        url:"/assignment/ajaxadd",
                         data:{role:value,user_id:$("#user_id").val()},
                         dataType:"json",
                         async:false,
@@ -102,7 +102,7 @@ func (this *User) Html() string {
                 $(select_values).each(function (index, value) {
                     $.ajax({
                         type:"post",
-                        url:"/assignment/remove",
+                        url:"/assignment/ajaxremove",
                         data:{role:value,user_id:$("#user_id").val()},
                         dataType:"json",
                         async:false,

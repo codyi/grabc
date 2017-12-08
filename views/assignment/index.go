@@ -10,11 +10,6 @@ type Index struct {
 
 func (this *Index) Html() string {
 	html := `
-<div class="box box-primary">
-        <div class="box-body">
-            <a class="btn btn-primary" href="/user/add" role="button">新增权限</a>
-        </div>
-    </div>
     <div class="box box-info">
         <div class="box-body">
             <table class="table table-bordered table-striped">

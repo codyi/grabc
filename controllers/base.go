@@ -52,7 +52,7 @@ func (this *BaseController) Prepare() {
 	}
 
 	if !libs.CheckAccess(this.controllerName, this.actionName) {
-		this.redirect(libs.NoPermissionUrl)
+		this.redirect(libs.Http_403)
 	}
 }
 

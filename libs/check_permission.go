@@ -18,7 +18,7 @@ var Identify *IUserIdentify
 var IgnoreRoutes map[string][]string
 
 //404页面网址
-var NoPermissionUrl string = ""
+var Http_403 string = ""
 
 //权限检查
 func CheckAccess(controllerName, routeName string) bool {

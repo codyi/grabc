@@ -50,6 +50,6 @@ func CheckAccess(controllerName, routeName string) bool {
 }
 
 //没有权限跳转的页面
-func NoPermissionUrl(url string) {
-	libs.NoPermissionUrl = url
+func Http_403(url string) {
+	libs.Http_403 = url
 }

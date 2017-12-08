@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"github.com/astaxie/beego/utils"
-	"grabc/libs"
-	"grabc/models"
-	"grabc/views/route"
+	"github.com/grabc/libs"
+	"github.com/grabc/models"
+	"github.com/grabc/views/route"
 	"strings"
 )
 

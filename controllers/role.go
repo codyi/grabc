@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"grabc/libs"
-	"grabc/models"
-	"grabc/views/role"
+	"github.com/grabc/libs"
+	"github.com/grabc/models"
+	"github.com/grabc/views/role"
 	"strconv"
 	"strings"
 )

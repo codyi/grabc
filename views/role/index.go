@@ -1,7 +1,7 @@
 package role
 
 import (
-	. "grabc/views/layout"
+	. "github.com/grabc/views/layout"
 )
 
 type Index struct {

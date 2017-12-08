@@ -1,92 +1,41 @@
 package layout
 
-var globalCss []string
-var globalJs []string
+import (
+	"github.com/grabc/libs"
+	"strings"
+)
 
-//append css
-func GloablCssAppend(css ...string) {
-	for _, c := range css {
-		globalCss = append(globalCss, c)
-	}
-}
-
-//append js
-func GloablJsAppend(js ...string) {
-	for _, j := range js {
-		globalJs = append(globalJs, j)
-	}
-}
-
-func registerGloablCss() string {
-	var cssHtml string
-	if globalCss != nil {
-		for _, c := range globalCss {
-			cssHtml += "<link rel=\"stylesheet\" href=\"" + c + "\">"
-		}
-	}
-
-	return cssHtml
-}
-
-func registerGloablJs() string {
-	var jsHtml string
-	if globalJs != nil {
-		for _, j := range globalJs {
-			jsHtml += "<script src=\"" + j + "\"></script>"
-		}
-	}
-
-	return jsHtml
-}
+var DefaultLayout string
 
 func init() {
-	GloablCssAppend("https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css")
-	GloablJsAppend("https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js", "https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js", "http://127.0.0.1:8080/static/html/global.js")
-}
-
-type BaseTemplate struct {
-	selfCss []string
-	selfJs  []string
-}
-
-//append css
-func (this *BaseTemplate) SelfCssAppend(css ...string) {
-	for _, c := range css {
-		this.selfCss = append(this.selfCss, c)
-	}
-}
-
-//append js
-func (this *BaseTemplate) SelfJsAppend(js ...string) {
-	for _, j := range js {
-		this.selfJs = append(this.selfJs, j)
-	}
-}
-
-func (this *BaseTemplate) registerSelfCss() string {
-	var cssHtml string
-	if this.selfCss != nil {
-		for _, c := range this.selfCss {
-			cssHtml += "<link rel=\"stylesheet\" href=\"" + c + "\">"
-		}
-	}
-
-	return cssHtml
-}
-
-func (this *BaseTemplate) registerSelfJs() string {
-	var jsHtml string
-	if this.selfJs != nil {
-		for _, j := range this.selfJs {
-			jsHtml += "<script src=\"" + j + "\"></script>"
-		}
-	}
-
-	return jsHtml
-}
-
-func (this *BaseTemplate) DealHtml(html string) string {
-	return this.GetHeaderHtml() + `<div class="container content_warp"><section class="content-header">
+	DefaultLayout = `
+<!DOCTYPE html>
+<html lang='zh-cn'>
+<head>
+	<meta charset='UTF-8'/>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+	<meta name='csrf-param' content='_csrf-backend'>
+	<title>路由列表</title>
+	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	` + GetGlobalCss() + GetGlobalJs() + `
+</head>
+<body>
+	<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-collapse collapse" role="navigation">
+        <ul class="nav navbar-nav" id="top_menu">
+          <li class="hidden-sm hidden-md">
+          	<a href="/route/index">路由管理</a></li>
+          <li><a href="/permission/index">权限管理</a></li>
+          <li><a href="/role/index">角色管理</a></li>
+          <li><a href="/assignment/index">用户授权</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="container content_warp"><section class="content-header">
   	<ul class="breadcrumb">
 	  <li>
         <a href='{{.homeUrl}}'>
@@ -106,35 +55,64 @@ func (this *BaseTemplate) DealHtml(html string) string {
       </li>
       {{end}}
     </ul>
-  </section>` + this.GetAlertHtml() + html + "</div>" + this.GetFooterHtml()
+  </section>
+  {{.grabc_content}}
+  </div>
+<script>
+$(function(){
+	//设置活动导航
+	$.setActiveMenu();
+
+	$("[data-confirm]").click(function () {
+		if (confirm($(this).attr("data-confirm"))) {
+			var oThis = this;
+			$.post($(this).attr("href"), function(response){
+				console.log(response)
+				if (response.Code == 200) {
+					$(oThis).parent().parent().remove();
+				}
+			});
+		}
+
+		return false;
+	});
+});
+
+//设置导航选中状态
+$.setActiveMenu = function(){
+	var pathname = window.location.pathname;
+
+	if (pathname.substr(0, 1) == "/") {
+		pathname = pathname.substr(1, pathname.length)
+	}
+
+	var controllerName = pathname.split("/")[0].toLocaleLowerCase(); //字符分割 
+
+
+	$("#top_menu").children("li").each(function(){
+		var url = $(this).children("a").attr("href").toLocaleLowerCase();
+
+		if (url.indexOf(controllerName) == 1) {
+			$(this).children("a").addClass("active")
+		}
+	});
+}
+</script>
+</body></html>
+`
 }
 
-func (this *BaseTemplate) GetHeaderHtml() string {
-	return `
-<!DOCTYPE html>
-<html lang='zh-cn'>
-<head>
-	<meta charset='UTF-8'/>
-	<meta name='viewport' content='width=device-width, initial-scale=1'>
-	<meta name='csrf-param' content='_csrf-backend'>
-	<title>路由列表</title>
-	` + registerGloablCss() + this.registerSelfCss() + GetGlobalCss() + registerGloablJs() + this.registerSelfJs() + GetGlobalJs() + `
-</head>
-<body>
-	<div class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-collapse collapse" role="navigation">
-        <ul class="nav navbar-nav" id="top_menu">
-          <li class="hidden-sm hidden-md">
-          	<a href="/route/index">路由管理</a></li>
-          <li><a href="/permission/index">权限管理</a></li>
-          <li><a href="/role/index">角色管理</a></li>
-          <li><a href="/assignment/index">用户授权</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-`
+type BaseTemplate struct {
+}
+
+func (this *BaseTemplate) DealHtml(html string) string {
+	grabc_content := GetGlobalCss() + GetGlobalJs() + `` + this.GetAlertHtml() + html
+
+	if libs.Template.Layout != "" {
+		return strings.Replace(libs.Template.Layout, "{{.grabc_content}}", grabc_content, 1)
+	} else {
+		return strings.Replace(DefaultLayout, "{{.grabc_content}}", grabc_content, 1)
+	}
 }
 
 func (this *BaseTemplate) GetAlertHtml() string {
@@ -183,7 +161,4 @@ func (this *BaseTemplate) GetAlertHtml() string {
 </div>
 {{end}}
 `
-}
-func (this *BaseTemplate) GetFooterHtml() string {
-	return "</body></html>"
 }

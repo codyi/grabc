@@ -1,7 +1,7 @@
 package assignment
 
 import (
-	. "grabc/views/layout"
+	. "github.com/grabc/views/layout"
 )
 
 type User struct {

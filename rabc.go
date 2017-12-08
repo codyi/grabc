@@ -2,9 +2,9 @@ package grabc
 
 import (
 	"github.com/astaxie/beego"
-	"grabc/controllers"
-	"grabc/libs"
-	"grabc/models"
+	"github.com/grabc/controllers"
+	"github.com/grabc/libs"
+	"github.com/grabc/models"
 )
 
 //init function
@@ -52,4 +52,11 @@ func CheckAccess(controllerName, routeName string) bool {
 //没有权限跳转的页面
 func Http_403(url string) {
 	libs.Http_403 = url
+}
+
+//设置grabc的模板
+func SetLayout(s string, layoutData map[string]interface{}) {
+	libs.Template = libs.GrabcTemplate{}
+	libs.Template.Layout = s
+	libs.Template.Data = layoutData
 }

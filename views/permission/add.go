@@ -1,7 +1,7 @@
 package permission
 
 import (
-	. "grabc/views/layout"
+	. "github.com/grabc/views/layout"
 )
 
 type Add struct {

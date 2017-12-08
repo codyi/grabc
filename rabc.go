@@ -69,10 +69,12 @@ func AppendIgnoreRoute(c, r string) {
 func CheckAccess(controllerName, routeName string) bool {
 	allAccessRoutes := make(map[string][]string, 0)
 
+	//如果存在用户ID，则获取用户对应的权限
 	if identify.GetId() > 0 {
 		allAccessRoutes = models.Route{}.ListByUserId(identify.GetId())
 	}
 
+	//将忽律检查的路由和可以登录的路由合并
 	for controller, routes := range ignoreRoutes {
 		if allAccessRoutes[controller] == nil {
 			allAccessRoutes[controller] = routes
@@ -84,6 +86,7 @@ func CheckAccess(controllerName, routeName string) bool {
 
 	}
 
+	//检查路由
 	controllerName = strings.ToLower(controllerName)
 	routeName = strings.ToLower(routeName)
 
@@ -97,7 +100,8 @@ func CheckAccess(controllerName, routeName string) bool {
 		}
 	}
 
-	if allAccessRoutes["*"] != nil {
+	//如果用户存在*的权限，将可以进入全部页面
+	if allAccessRoutes["*"] != nil && utils.InSlice("*", allAccessRoutes["*"]) {
 		return true
 	}
 

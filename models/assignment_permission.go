@@ -6,19 +6,19 @@ import (
 	"time"
 )
 
-type PermissionAssignment struct {
+type AssignmentPermission struct {
 	BaseModel
 	RoleId       int `json:"role_id" label:"角色ID"`
 	PermissionId int `json:"permission_id" label:"权限ID"`
 }
 
-func (this *PermissionAssignment) TableName() string {
+func (this *AssignmentPermission) TableName() string {
 	return "rabc_permission_assignment"
 }
 
 //insert current permission to database
 //not insert if name is exist
-func (this *PermissionAssignment) Insert() (isInsert bool, err error) {
+func (this *AssignmentPermission) Insert() (isInsert bool, err error) {
 	if this.RoleId <= 0 {
 		return false, errors.New("角色ID不能为空")
 	}
@@ -27,7 +27,7 @@ func (this *PermissionAssignment) Insert() (isInsert bool, err error) {
 		return false, errors.New("权限ID不能为空")
 	}
 
-	self := &PermissionAssignment{}
+	self := &AssignmentPermission{}
 	o := orm.NewOrm()
 	o.QueryTable(this.TableName()).Filter("role_id", this.RoleId).Filter("permission_id", this.PermissionId).One(self)
 
@@ -43,7 +43,7 @@ func (this *PermissionAssignment) Insert() (isInsert bool, err error) {
 }
 
 //remove current name from database
-func (this *PermissionAssignment) Delete(roleId, permissionId int) (isDelete bool, err error) {
+func (this *AssignmentPermission) Delete(roleId, permissionId int) (isDelete bool, err error) {
 	if permissionId <= 0 {
 		return false, errors.New("权限ID不能为空")
 	}
@@ -52,7 +52,7 @@ func (this *PermissionAssignment) Delete(roleId, permissionId int) (isDelete boo
 	}
 
 	o := orm.NewOrm()
-	model := &PermissionAssignment{}
+	model := &AssignmentPermission{}
 	o.QueryTable(this.TableName()).Filter("role_id", roleId).Filter("permission_id", permissionId).One(model)
 
 	if model.Id <= 0 {
@@ -63,23 +63,23 @@ func (this *PermissionAssignment) Delete(roleId, permissionId int) (isDelete boo
 	return num > 0, err
 }
 
-//retrieve all PermissionAssignment
-func (this PermissionAssignment) FindAllByRoleId(roleId int) ([]*PermissionAssignment, error) {
-	var permissionAssignments []*PermissionAssignment
+//retrieve all AssignmentPermission
+func (this AssignmentPermission) FindAllByRoleId(roleId int) ([]*AssignmentPermission, error) {
+	var AssignmentPermissions []*AssignmentPermission
 
 	if roleId <= 0 {
-		return permissionAssignments, errors.New("角色ID不能为空")
+		return AssignmentPermissions, errors.New("角色ID不能为空")
 	}
 
 	o := orm.NewOrm()
-	_, err := o.QueryTable(this.TableName()).Filter("role_id", roleId).All(&permissionAssignments)
+	_, err := o.QueryTable(this.TableName()).Filter("role_id", roleId).All(&AssignmentPermissions)
 
-	return permissionAssignments, err
+	return AssignmentPermissions, err
 }
 
 //获取传入角色id的名称获取全部的权限ids
-func (this PermissionAssignment) FindPerIdsByRoleIds(ids []int) ([]int, error) {
-	var pas []*PermissionAssignment
+func (this AssignmentPermission) FindPerIdsByRoleIds(ids []int) ([]int, error) {
+	var pas []*AssignmentPermission
 	var roleIds []int
 	if len(ids) == 0 {
 		return roleIds, errors.New("角色ID不能为空")

@@ -103,21 +103,21 @@ func (this Route) ListByUserId(user_id int) map[string][]string {
 		return routes
 	}
 
-	roleAssignment := RoleAssignment{}
+	roleAssignment := AssignmentRole{}
 	roleIds, err := roleAssignment.FindRoleIdsByUserId(user_id)
 
 	if err != nil {
 		return routes
 	}
 
-	permissionAssignment := PermissionAssignment{}
+	permissionAssignment := AssignmentPermission{}
 	permissionIds, err := permissionAssignment.FindPerIdsByRoleIds(roleIds)
 
 	if err != nil {
 		return routes
 	}
 
-	routeAssignment := RouteAssignment{}
+	routeAssignment := AssignmentRoute{}
 	routeIds, err := routeAssignment.FindRouteIdsByPerIds(permissionIds)
 
 	if err != nil {

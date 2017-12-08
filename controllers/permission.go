@@ -120,7 +120,7 @@ func (this *PermissionController) Assignment() {
 
 	//获取已经授权的路由
 	routeModel := models.Route{}
-	routeAssignmentModel := models.RouteAssignment{}
+	routeAssignmentModel := models.AssignmentRoute{}
 	allRouteAssignmentModels, err := routeAssignmentModel.FindAllByPermissionId(permissionModel.Id)
 
 	if err != nil {
@@ -174,7 +174,7 @@ func (this *PermissionController) AssignmentRoute() {
 		permissionId := strings.TrimSpace(this.GetString("permissionId"))
 
 		routeModel := models.Route{}
-		routeAssignmentModel := models.RouteAssignment{}
+		routeAssignmentModel := models.AssignmentRoute{}
 
 		if route != "" {
 			routeModel.FindByRoute(route)
@@ -228,7 +228,7 @@ func (this *PermissionController) RemoveRoute() {
 	if this.isPost() {
 		param_route := strings.TrimSpace(this.GetString("route"))
 		param_permision_id := strings.TrimSpace(this.GetString("permissionId"))
-		routeAssignmentModel := models.RouteAssignment{}
+		routeAssignmentModel := models.AssignmentRoute{}
 
 		var int_param_route_id, int_param_permission_id int
 		routeModel := models.Route{}
@@ -299,7 +299,7 @@ func (this *PermissionController) Delete() {
 			return
 		}
 
-		routeAssignmentModel := models.RouteAssignment{}
+		routeAssignmentModel := models.AssignmentRoute{}
 		err = routeAssignmentModel.DeleteByPermissionId(permissionModel.Id)
 
 		if err != nil {

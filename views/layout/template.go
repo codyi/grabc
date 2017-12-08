@@ -40,7 +40,7 @@ func registerGloablJs() string {
 }
 
 func init() {
-	GloablCssAppend("https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css", "http://127.0.0.1:8080/static/html/global.css?v=1")
+	GloablCssAppend("https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css")
 	GloablJsAppend("https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js", "https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js", "http://127.0.0.1:8080/static/html/global.js")
 }
 
@@ -118,7 +118,7 @@ func (this *BaseTemplate) GetHeaderHtml() string {
 	<meta name='viewport' content='width=device-width, initial-scale=1'>
 	<meta name='csrf-param' content='_csrf-backend'>
 	<title>路由列表</title>
-	` + registerGloablCss() + this.registerSelfCss() + `
+	` + registerGloablCss() + this.registerSelfCss() + GetGlobalCss() + registerGloablJs() + this.registerSelfJs() + GetGlobalJs() + `
 </head>
 <body>
 	<div class="navbar navbar-inverse navbar-fixed-top">
@@ -185,5 +185,5 @@ func (this *BaseTemplate) GetAlertHtml() string {
 `
 }
 func (this *BaseTemplate) GetFooterHtml() string {
-	return registerGloablJs() + this.registerSelfJs() + "</body></html>"
+	return "</body></html>"
 }

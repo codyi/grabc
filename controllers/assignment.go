@@ -47,7 +47,7 @@ func (this *AssignmentController) Index() {
 	}
 
 	var userItems []userData
-	roleAssignmentModel := models.RoleAssignment{}
+	roleAssignmentModel := models.AssignmentRole{}
 	roleModel := models.Role{}
 
 	for id, name := range userList {
@@ -89,7 +89,7 @@ func (this *AssignmentController) User() {
 	//获取全部的权限
 	allRoles := models.Role{}.FindAll()
 	//获取全部已经授权的角色ID
-	allAssignmentRoleIds, err := models.RoleAssignment{}.FindRoleIdsByUserId(user_id)
+	allAssignmentRoleIds, err := models.AssignmentRole{}.FindRoleIdsByUserId(user_id)
 
 	if err != nil {
 		this.AddErrorMessage(err.Error())
@@ -154,7 +154,7 @@ func (this *AssignmentController) Add() {
 			int_param_user_id = id
 		}
 
-		roleAssignmentModel := models.RoleAssignment{}
+		roleAssignmentModel := models.AssignmentRole{}
 		roleAssignmentModel.UserId = int_param_user_id
 		roleAssignmentModel.RoleId = roleModel.Id
 		if isInsert, err := roleAssignmentModel.Insert(); isInsert {
@@ -208,7 +208,7 @@ func (this *AssignmentController) Remove() {
 			int_param_user_id = id
 		}
 
-		roleAssignmentModel := models.RoleAssignment{}
+		roleAssignmentModel := models.AssignmentRole{}
 		if err := roleAssignmentModel.FindByRoleIdAndUserId(roleModel.Id, int_param_user_id); err == nil {
 			if is_delete, err := roleAssignmentModel.Delete(); is_delete {
 				data.Code = 200

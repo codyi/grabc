@@ -6,18 +6,18 @@ import (
 	"time"
 )
 
-type RouteAssignment struct {
+type AssignmentRoute struct {
 	BaseModel
 	RouteId      int `json:"route_id" label:"路由ID"`
 	PermissionId int `json:"permission_id" label:"权限ID"`
 }
 
-func (this *RouteAssignment) TableName() string {
-	return "rabc_route_assignment"
+func (this *AssignmentRoute) TableName() string {
+	return "rabc_assignment_route"
 }
 
-//Find one RouteAssignment by id from database
-func (this *RouteAssignment) FindById(id int) error {
+//Find one AssignmentRoute by id from database
+func (this *AssignmentRoute) FindById(id int) error {
 	if id <= 0 {
 		return errors.New("ID不能为空")
 	}
@@ -28,7 +28,7 @@ func (this *RouteAssignment) FindById(id int) error {
 
 //insert current permission to database
 //not insert if name is exist
-func (this *RouteAssignment) Insert() (isInsert bool, err error) {
+func (this *AssignmentRoute) Insert() (isInsert bool, err error) {
 	if this.RouteId <= 0 {
 		return false, errors.New("路由ID不能为空")
 	}
@@ -37,7 +37,7 @@ func (this *RouteAssignment) Insert() (isInsert bool, err error) {
 		return false, errors.New("权限ID不能为空")
 	}
 
-	self := &RouteAssignment{}
+	self := &AssignmentRoute{}
 	o := orm.NewOrm()
 	o.QueryTable(this.TableName()).Filter("route_id", this.RouteId).Filter("permission_id", this.PermissionId).One(self)
 
@@ -53,7 +53,7 @@ func (this *RouteAssignment) Insert() (isInsert bool, err error) {
 }
 
 //remove current name from database
-func (this *RouteAssignment) Delete(routeId, permissionId int) (isDelete bool, err error) {
+func (this *AssignmentRoute) Delete(routeId, permissionId int) (isDelete bool, err error) {
 	if permissionId <= 0 {
 		return false, errors.New("权限ID不能为空")
 	}
@@ -62,7 +62,7 @@ func (this *RouteAssignment) Delete(routeId, permissionId int) (isDelete bool, e
 	}
 
 	o := orm.NewOrm()
-	model := &RouteAssignment{}
+	model := &AssignmentRoute{}
 	o.QueryTable(this.TableName()).Filter("route_id", routeId).Filter("permission_id", permissionId).One(model)
 
 	if model.Id <= 0 {
@@ -73,22 +73,22 @@ func (this *RouteAssignment) Delete(routeId, permissionId int) (isDelete bool, e
 	return num > 0, err
 }
 
-//retrieve all RouteAssignment
-func (this RouteAssignment) FindAllByPermissionId(permissionId int) ([]*RouteAssignment, error) {
-	var routeAssignments []*RouteAssignment
+//retrieve all AssignmentRoute
+func (this AssignmentRoute) FindAllByPermissionId(permissionId int) ([]*AssignmentRoute, error) {
+	var AssignmentRoutes []*AssignmentRoute
 
 	if permissionId <= 0 {
-		return routeAssignments, errors.New("权限ID不能为空")
+		return AssignmentRoutes, errors.New("权限ID不能为空")
 	}
 
 	o := orm.NewOrm()
-	_, err := o.QueryTable(this.TableName()).Filter("permission_id", permissionId).All(&routeAssignments)
+	_, err := o.QueryTable(this.TableName()).Filter("permission_id", permissionId).All(&AssignmentRoutes)
 
-	return routeAssignments, err
+	return AssignmentRoutes, err
 }
 
 //remove current name from database
-func (this *RouteAssignment) DeleteByPermissionId(permissionId int) (err error) {
+func (this *AssignmentRoute) DeleteByPermissionId(permissionId int) (err error) {
 	if permissionId <= 0 {
 		return errors.New("权限ID不能为空")
 	}
@@ -99,8 +99,8 @@ func (this *RouteAssignment) DeleteByPermissionId(permissionId int) (err error) 
 }
 
 //获取传入权限id的获取全部的路由ids
-func (this RouteAssignment) FindRouteIdsByPerIds(ids []int) ([]int, error) {
-	var ra []*RouteAssignment
+func (this AssignmentRoute) FindRouteIdsByPerIds(ids []int) ([]int, error) {
+	var ra []*AssignmentRoute
 	var routeIds []int
 	if len(ids) == 0 {
 		return routeIds, errors.New("权限ID不能为空")

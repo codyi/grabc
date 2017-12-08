@@ -7,10 +7,10 @@ import (
 func init() {
 	orm.RegisterModel(new(Route))
 	orm.RegisterModel(new(Permission))
-	orm.RegisterModel(new(PermissionAssignment))
+	orm.RegisterModel(new(AssignmentPermission))
 	orm.RegisterModel(new(Role))
-	orm.RegisterModel(new(RoleAssignment))
-	orm.RegisterModel(new(RouteAssignment))
+	orm.RegisterModel(new(AssignmentRole))
+	orm.RegisterModel(new(AssignmentRoute))
 }
 
 type BaseModel struct {

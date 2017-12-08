@@ -12,15 +12,15 @@ type RouteController struct {
 	BaseController
 }
 
-//route index page
+//路由首页
 func (this *RouteController) Index() {
 	routeModel := models.Route{}
 	routes, _ := routeModel.FindAll()
-	var insertRoutes []string
+	var addRoutes []string
 
 	if routes != nil {
 		for _, route := range routes {
-			insertRoutes = append(insertRoutes, route.Route)
+			addRoutes = append(addRoutes, route.Route)
 		}
 	}
 
@@ -28,19 +28,19 @@ func (this *RouteController) Index() {
 	var notAddRoutes []string
 
 	for _, route := range allRoutes {
-		if !utils.InSlice(route, insertRoutes) {
+		if !utils.InSlice(route, addRoutes) {
 			notAddRoutes = append(notAddRoutes, route)
 		}
 	}
 
 	this.htmlData["notAddRoutes"] = notAddRoutes
-	this.htmlData["addRoutes"] = insertRoutes
+	this.htmlData["addRoutes"] = addRoutes
 	this.AddBreadcrumbs("路由管理", this.URLFor("RouteController.Index"))
 	this.ShowHtml(&route.Index{})
 }
 
 //route ajax add page
-func (this *RouteController) Add() {
+func (this *RouteController) AjaxAdd() {
 	data := JsonData{}
 
 	if this.isPost() {
@@ -68,7 +68,7 @@ func (this *RouteController) Add() {
 }
 
 //route ajax remove page
-func (this *RouteController) Remove() {
+func (this *RouteController) AjaxRemove() {
 	data := JsonData{}
 
 	if this.isPost() {

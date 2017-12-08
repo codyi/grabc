@@ -12,6 +12,7 @@ type RoleController struct {
 	BaseController
 }
 
+//角色管理首页
 func (this *RoleController) Index() {
 	page_index := strings.TrimSpace(this.GetString("page_index"))
 
@@ -39,6 +40,7 @@ func (this *RoleController) Index() {
 	this.ShowHtml(&role.Index{})
 }
 
+//添加角色页面
 func (this *RoleController) Post() {
 	roleModel := models.Role{}
 
@@ -63,6 +65,7 @@ func (this *RoleController) Post() {
 	this.ShowHtml(&role.Post{})
 }
 
+//角色修改
 func (this *RoleController) Put() {
 	roleModel := models.Role{}
 	role_id := strings.TrimSpace(this.GetString("role_id"))
@@ -97,7 +100,7 @@ func (this *RoleController) Put() {
 	this.ShowHtml(&role.Put{})
 }
 
-//授权展示页面
+//角色授权展示页面
 func (this *RoleController) Assignment() {
 	roleModel := models.Role{}
 	role_id := strings.TrimSpace(this.GetString("role_id"))
@@ -117,7 +120,7 @@ func (this *RoleController) Assignment() {
 	}
 
 	//获取已经授权的权限关系
-	allPermissionAssignments, err := models.PermissionAssignment{}.FindAllByRoleId(roleModel.Id)
+	allPermissionAssignments, err := models.AssignmentPermission{}.FindAllByRoleId(roleModel.Id)
 
 	if err != nil {
 		this.AddErrorMessage(err.Error())
@@ -174,7 +177,7 @@ func (this *RoleController) AjaxAssignment() {
 			intRoleId = id
 		}
 
-		perAssignmentModel := models.PermissionAssignment{}
+		perAssignmentModel := models.AssignmentPermission{}
 		perAssignmentModel.RoleId = intRoleId
 		perAssignmentModel.PermissionId = permissionModel.Id
 		if isInsert, err := perAssignmentModel.Insert(); isInsert {
@@ -219,7 +222,7 @@ func (this *RoleController) AjaxUnassignment() {
 			intRoleId = id
 		}
 
-		perAssignmentModel := models.PermissionAssignment{}
+		perAssignmentModel := models.AssignmentPermission{}
 		if is_delete, err := perAssignmentModel.Delete(intRoleId, permissionModel.Id); err == nil {
 			if is_delete {
 				data.Code = 200

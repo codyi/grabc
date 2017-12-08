@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var RegisterControllers *[]beego.ControllerInterface
+var RegisterControllers []beego.ControllerInterface
 
 // 不会添加到路由方法
 var exceptMethods []string
@@ -42,7 +42,7 @@ func AllRoutes() []string {
 	var routes []string
 	routes = append(routes, "*/*")
 	//遍历注册的控制器，获取器方法
-	for _, controller := range *RegisterControllers {
+	for _, controller := range RegisterControllers {
 		reflectVal := reflect.ValueOf(controller)
 		rt := reflectVal.Type()
 		ct := reflect.Indirect(reflectVal).Type()

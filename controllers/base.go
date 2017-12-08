@@ -36,7 +36,7 @@ type BaseController struct {
 
 // redirect to url
 func (this *BaseController) redirect(url string) {
-	this.Controller.Redirect(url, 301)
+	this.Controller.Redirect(url, 302)
 	this.StopRun()
 }
 
@@ -49,6 +49,10 @@ func (this *BaseController) Prepare() {
 	this.funcMap = template.FuncMap{
 		"pagination":     libs.PaginationRender,
 		"unixTimeFormat": libs.UnixTimeFormat,
+	}
+
+	if !libs.CheckAccess(this.controllerName, this.actionName) {
+		this.redirect(libs.NoPermissionUrl)
 	}
 }
 

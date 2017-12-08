@@ -1,6 +1,6 @@
 ## GRABC 
 [![GitHub forks](https://img.shields.io/github/forks/codyi/grabc.svg?style=social&label=Forks)](https://github.com/codyi/grabc/network)
-[![GitHub stars](https://img.shields.io/github/stars/codyi/grabc.svg?style=social&label=Starss)](https://github.com/hunterhug/GoWeb/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/codyi/grabc.svg?style=social&label=Starss)](https://github.com/codyi/grabc/stargazers)
 [![GitHub last commit](https://img.shields.io/github/last-commit/codyi/grabc.svg)](https://github.com/codyi/grabc)
 [![Go Report Card](https://goreportcard.com/badge/github.com/codyi/grabc)](https://goreportcard.com/report/github.com/codyi/grabc)  
 

@@ -13,7 +13,7 @@ type AssignmentPermission struct {
 }
 
 func (this *AssignmentPermission) TableName() string {
-	return "rabc_permission_assignment"
+	return "rabc_assignment_permission"
 }
 
 //insert current permission to database

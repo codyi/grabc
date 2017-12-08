@@ -13,7 +13,7 @@ type AssignmentRole struct {
 }
 
 func (this *AssignmentRole) TableName() string {
-	return "rabc_role_assignment"
+	return "rabc_assignment_role"
 }
 
 //insert current data to database

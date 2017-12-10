@@ -81,3 +81,8 @@ type IUserIdentify interface {
 </pre>
 
 grabc的详细例子：github.com/codyi/grabc_example
+
+![Image text](http://www.liguosong.com/grabc_1.jpeg)
+![Image text](http://www.liguosong.com/grabc_2.jpeg)
+![Image text](http://www.liguosong.com/grabc_3.jpeg)
+![Image text](http://www.liguosong.com/grabc_4.jpeg)

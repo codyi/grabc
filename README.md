@@ -79,3 +79,5 @@ type IUserIdentify interface {
 	GetId() int //返回当前登录用户的ID
 }
 </pre>
+
+grabc的详细例子：github.com/codyi/grabc_example

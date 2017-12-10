@@ -52,7 +52,7 @@ if !grabc.CheckAccess(this.controllerName, this.actionName) {
 
 注意：增加完权限判断之后，会发现很多页面都不能访问了，那么就在忽律权限中增加如下配置
 <pre>
-grabc.AppendIgnoreRoute("\*", "\*")
+grabc.AppendIgnoreRoute("*", "*")
 </pre>
 以上配置将会忽律所有的权限检查，这时候需要去/route/index中增加路由，然后添加权限，角色和用户分配，都配置好之后，就可以将grabc.AppendIgnoreRoute("\*", "\*")代码删掉，然后重启项目~~权限起作用了
 

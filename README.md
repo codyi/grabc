@@ -80,6 +80,14 @@ type IUserIdentify interface {
 }
 </pre>
 
+### 注意
+grabc对注册的控制器会进行反射，然后获取每个controller的名称和controller内的公共方法，由于每个controller都继承了beego.Controller，在获取controller下的方法名称时，会将beego.Controller继承的方法也会获取到，所以目前还不能区分出方法名到底是beego和用户自己定义的，所以grabc将beego继承的方法都进行了忽律，如果在route扫描中，没有找到自定义的方法，可以在controller中增加如下方法，进行方法返回~~
+<pre>
+func (this *SiteController) RABCMethods() []string {
+	return []string{"Get", "Post"}
+}
+</pre>
+
 grabc的详细例子：github.com/codyi/grabc_example
 
 ![Image text](http://www.liguosong.com/grabc_1.jpeg)

@@ -25,7 +25,7 @@ func CheckAccess(controllerName, routeName string) bool {
 	allAccessRoutes := make(map[string][]string, 0)
 
 	//如果存在用户ID，则获取用户对应的权限
-	if (*Identify).GetId() > 0 {
+	if Identify != nil && (*Identify).GetId() > 0 {
 		allAccessRoutes = models.Route{}.ListByUserId((*Identify).GetId())
 	}
 

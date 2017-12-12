@@ -14,7 +14,7 @@ func init() {
 	beego.AutoRouter(&controllers.RoleController{})
 	beego.AutoRouter(&controllers.PermissionController{})
 	beego.AutoRouter(&controllers.AssignmentController{})
-
+	beego.AutoRouter(&controllers.MenuController{})
 	libs.IgnoreRoutes = make(map[string][]string, 0)
 }
 

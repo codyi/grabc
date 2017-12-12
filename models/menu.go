@@ -89,3 +89,18 @@ func (this Menu) DeleteByName(name string) (isDelete bool, err error) {
 
 	return num > 0, err
 }
+
+//retrieve all menus
+func (this Menu) List(pageIndex, pageCount int) ([]*Menu, int, error) {
+	var menus []*Menu
+	var total int64
+	o := orm.NewOrm()
+	_, err := o.QueryTable(this.TableName()).Limit(pageCount).Offset(pageCount * (pageIndex - 1)).All(&menus)
+
+	if err != nil {
+		return menus, int(total), err
+	}
+
+	total, err = o.QueryTable(this.TableName()).Count()
+	return menus, int(total), err
+}

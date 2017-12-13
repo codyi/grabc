@@ -36,6 +36,7 @@ func (this *Index) Html() string {
                             <td>{{$menu.Name}}</td>
                             <td>{{$menu.Route}}</td>
                             <td>{{$menu.Order}}</td>
+                            <td>{{$menu.Parent}}</td>
                             <td>{{unixTimeFormat $menu.CreateAt "2006-01-02"}}</td>
                             <td>
                                 <a href="/menu/view?menu_id={{$menu.Id}}" title="授权">

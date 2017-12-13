@@ -77,7 +77,29 @@ func (this *MenuController) Post() {
 
 	}
 
+	routeModel := models.Route{}
+	routes, _ := routeModel.FindAll()
+	var selectRoutes []string
+
+	if routes != nil {
+		for _, route := range routes {
+			if !strings.Contains(route.Route, "*") {
+				selectRoutes = append(selectRoutes, route.Route)
+			}
+		}
+	}
+
+	parents, _ := menuModel.FindAllParent()
+	selectParents := make(map[int]string, 0)
+
+	if parents != nil {
+		for _, p := range parents {
+			selectParents[p.Id] = p.Name
+		}
+	}
 	this.htmlData["model"] = menuModel
+	this.htmlData["routes"] = selectRoutes
+	this.htmlData["parents"] = selectParents
 	this.AddBreadcrumbs("菜单管理", this.URLFor("MenuController.Index"))
 	this.AddBreadcrumbs("新增", this.URLFor("MenuController.Add"))
 	this.ShowHtml(&menu.Post{})

@@ -75,6 +75,15 @@ func (this *Menu) Update() (err error) {
 	return err
 }
 
+//retrieve all route
+func (this Menu) FindAllParent() ([]*Menu, error) {
+	var menus []*Menu
+	o := orm.NewOrm()
+	_, err := o.QueryTable(this.TableName()).Filter("parent", 0).All(&menus)
+
+	return menus, err
+}
+
 //remove current name from database
 func (this Menu) DeleteByName(name string) (isDelete bool, err error) {
 	if name == "" {

@@ -19,7 +19,12 @@ func (this *Form) FormHtml() string {
 <div class="form-group">
     <label class="control-label col-sm-2" for="menu_route">菜单路由</label>
     <div class="col-sm-4">
-        <input type="text" id="menu_route" class="form-control" name="menu_route" maxlength="200" value="{{.model.Route}}">
+        <select name="menu_route" class="form-control">
+        <option value="">请选择</option>
+        {{range $index,$route := .routes}}
+        <option value="{{$route}}" {{if eq $route $.model.Route}}selected="selected"{{end}}>{{$route}}</option>
+        {{end}}
+        </select>
     </div>
 </div>
 <div class="form-group">
@@ -31,7 +36,12 @@ func (this *Form) FormHtml() string {
 <div class="form-group">
     <label class="control-label col-sm-2" for="menu_parent">父级菜单</label>
     <div class="col-sm-4">
-        <input type="text" id="menu_parent" class="form-control" name="menu_parent" maxlength="200" value="{{.model.Parent}}">
+        <select name="menu_parent" class="form-control">
+            <option value="0">顶级菜单</option>
+            {{range $index,$parent := .parents}}
+            <option value="{{$index}}" {{if eq $index $.model.Parent}}selected="selected"{{end}}>{{$parent}}</option>
+            {{end}}
+        </select>
     </div>
 </div>
 <div class="form-group">

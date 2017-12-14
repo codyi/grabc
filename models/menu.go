@@ -128,3 +128,16 @@ func (this Menu) List(pageIndex, pageCount int) ([]*Menu, int, error) {
 	total, err = o.QueryTable(this.TableName()).Count()
 	return menus, int(total), err
 }
+
+//retrieve all menus
+func (this Menu) ListAll() ([]*Menu, error) {
+	var menus []*Menu
+	o := orm.NewOrm()
+	_, err := o.QueryTable(this.TableName()).OrderBy("parent", "-order").All(&menus)
+
+	if err != nil {
+		return menus, err
+	}
+
+	return menus, err
+}

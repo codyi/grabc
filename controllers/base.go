@@ -51,7 +51,7 @@ func (this *BaseController) Prepare() {
 		"unixTimeFormat": libs.UnixTimeFormat,
 	}
 
-	if !libs.CheckAccess(this.controllerName, this.actionName) {
+	if !libs.CheckAccess(this.controllerName, this.actionName, libs.AccessRoutes()) {
 		this.redirect(libs.Http_403)
 	}
 }

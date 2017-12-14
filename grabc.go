@@ -46,7 +46,7 @@ func AppendIgnoreRoute(c, r string) {
 
 //权限检查
 func CheckAccess(controllerName, routeName string) bool {
-	return libs.CheckAccess(controllerName, routeName)
+	return libs.CheckAccess(controllerName, routeName, libs.AccessRoutes())
 }
 
 //没有权限跳转的页面
@@ -59,4 +59,9 @@ func SetLayout(s string, layoutData map[string]interface{}) {
 	libs.Template = libs.GrabcTemplate{}
 	libs.Template.Layout = s
 	libs.Template.Data = layoutData
+}
+
+//返回用户可以看到的导航
+func AccessMenus() []*libs.MenuGroup {
+	return libs.AccessMenus()
 }

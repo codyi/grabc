@@ -33,18 +33,6 @@ func (this *MenuController) Index() {
 		this.AddErrorMessage(err.Error())
 	}
 
-	for i, m := range menus {
-		if m.Parent > 0 {
-			menuModel := models.Menu{}
-			menuModel.FindById(m.Parent)
-			m.ParentName = menuModel.Name
-		} else {
-			m.ParentName = "-"
-		}
-
-		menus[i] = m
-	}
-
 	pagination.PageTotal = pageTotal
 	this.htmlData["menus"] = menus
 	this.htmlData["pages"] = pagination
@@ -115,4 +103,119 @@ func (this *MenuController) Post() {
 	this.AddBreadcrumbs("菜单管理", this.URLFor("MenuController.Index"))
 	this.AddBreadcrumbs("新增", this.URLFor("MenuController.Add"))
 	this.ShowHtml(&menu.Post{})
+}
+
+//修改菜单页面
+func (this *MenuController) Put() {
+	menuModel := models.Menu{}
+
+	menu_id := strings.TrimSpace(this.GetString("menu_id"))
+
+	if id, err := strconv.Atoi(menu_id); err == nil {
+		if err := menuModel.FindById(id); err != nil {
+			this.AddErrorMessage("数据获取失败")
+		}
+	} else {
+		this.AddErrorMessage("数据不存在")
+	}
+
+	if this.isPost() && !menuModel.IsNewRecord() {
+		menu_name := strings.TrimSpace(this.GetString("menu_name"))
+		menu_order := strings.TrimSpace(this.GetString("menu_order"))
+		menu_route := strings.TrimSpace(this.GetString("menu_route"))
+		menu_parent := strings.TrimSpace(this.GetString("menu_parent"))
+
+		var int_menu_order, int_menu_parent int
+
+		if i, err := strconv.Atoi(menu_order); err != nil {
+			this.AddErrorMessage("排序必须是数字")
+		} else {
+			int_menu_order = i
+		}
+
+		if i, err := strconv.Atoi(menu_parent); err != nil {
+			this.AddErrorMessage("父级分类必须是数字")
+		} else {
+			int_menu_parent = i
+		}
+
+		menuModel.Name = menu_name
+		menuModel.Order = int_menu_order
+		menuModel.Parent = int_menu_parent
+		menuModel.Route = menu_route
+
+		if err := menuModel.Update(); err == nil {
+			this.AddSuccessMessage("修改成功")
+		} else {
+			this.AddErrorMessage("修改失败")
+		}
+
+	}
+
+	routeModel := models.Route{}
+	routes, _ := routeModel.FindAll()
+	var selectRoutes []string
+
+	if routes != nil {
+		for _, route := range routes {
+			if !strings.Contains(route.Route, "*") {
+				selectRoutes = append(selectRoutes, route.Route)
+			}
+		}
+	}
+
+	parents, _ := menuModel.FindAllParent()
+	selectParents := make(map[int]string, 0)
+
+	if parents != nil {
+		for _, p := range parents {
+			selectParents[p.Id] = p.Name
+		}
+	}
+	this.htmlData["model"] = menuModel
+	this.htmlData["routes"] = selectRoutes
+	this.htmlData["parents"] = selectParents
+	this.AddBreadcrumbs("菜单管理", this.URLFor("MenuController.Index"))
+	this.AddBreadcrumbs("修改", this.URLFor("MenuController.Put", "menu_id", menu_id))
+	this.ShowHtml(&menu.Put{})
+}
+
+//删除菜单
+func (this *MenuController) Delete() {
+	data := JsonData{}
+	if this.isPost() {
+		menu_id, err := strconv.Atoi(strings.TrimSpace(this.GetString("menu_id")))
+
+		if err != nil {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+			return
+		}
+
+		menuModel := models.Menu{}
+		if err := menuModel.FindById(menu_id); err != nil {
+			data.Code = 400
+			data.Message = "数据获取失败"
+			this.ShowJSON(&data)
+			return
+		}
+
+		if is_delete, err := menuModel.Delete(); is_delete {
+			data.Code = 200
+			data.Message = "删除成功"
+			this.ShowJSON(&data)
+			return
+		} else {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+			return
+		}
+	} else {
+		data.Code = 400
+		data.Message = "非法请求"
+	}
+
+	this.ShowJSON(&data)
 }

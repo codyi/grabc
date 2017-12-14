@@ -29,6 +29,16 @@ func (this *Menu) FindById(id int) error {
 	return o.QueryTable(this.TableName()).Filter("id", id).One(this)
 }
 
+func (this *Menu) GetParentName() string {
+	if this.Parent > 0 {
+		m := Menu{}
+		m.FindById(this.Parent)
+		return m.Name
+	}
+
+	return "-"
+}
+
 //Find one Menu by name from database
 func (this *Menu) FindByName(name string) error {
 	if name == "" {
@@ -85,17 +95,21 @@ func (this Menu) FindAllParent() ([]*Menu, error) {
 	return menus, err
 }
 
-//remove current name from database
-func (this Menu) DeleteByName(name string) (isDelete bool, err error) {
-	if name == "" {
-		return false, errors.New("菜单名称不能为空")
+//remove current menu from database
+func (this *Menu) Delete() (isDelete bool, err error) {
+	if this.IsNewRecord() {
+		return false, errors.New("删除对象不能为空")
 	}
+
 	o := orm.NewOrm()
-
 	MenuModel := &Menu{}
-	o.QueryTable(this.TableName()).Filter("name", name).One(MenuModel)
+	o.QueryTable(this.TableName()).Filter("parent", this.Id).One(MenuModel)
 
-	num, err := o.Delete(MenuModel)
+	if !MenuModel.IsNewRecord() {
+		return false, errors.New("存在子菜单，不能删除")
+	}
+
+	num, err := o.Delete(this)
 
 	return num > 0, err
 }

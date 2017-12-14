@@ -33,6 +33,18 @@ func (this *MenuController) Index() {
 		this.AddErrorMessage(err.Error())
 	}
 
+	for i, m := range menus {
+		if m.Parent > 0 {
+			menuModel := models.Menu{}
+			menuModel.FindById(m.Parent)
+			m.ParentName = menuModel.Name
+		} else {
+			m.ParentName = "-"
+		}
+
+		menus[i] = m
+	}
+
 	pagination.PageTotal = pageTotal
 	this.htmlData["menus"] = menus
 	this.htmlData["pages"] = pagination

@@ -10,7 +10,7 @@ import (
 var RegisterControllers []beego.ControllerInterface
 
 // 不会添加到路由方法
-var exceptMethods []string
+var exceptMethods []string = []string{"AddErrorMessage", "AddSuccessMessage", "AddInfoMessage", "AddWarningMessage", "AddBreadcrumbs"}
 
 func ExceptMethodAppend(excetMethod ...string) {
 	if len(excetMethod) > 0 {

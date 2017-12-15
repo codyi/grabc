@@ -16,6 +16,7 @@ func init() {
 	beego.AutoRouter(&controllers.AssignmentController{})
 	beego.AutoRouter(&controllers.MenuController{})
 	libs.IgnoreRoutes = make(map[string][]string, 0)
+	RegisterController(&controllers.RouteController{}, &controllers.RoleController{}, &controllers.PermissionController{}, &controllers.AssignmentController{}, &controllers.MenuController{})
 }
 
 //注册需要检查的routes

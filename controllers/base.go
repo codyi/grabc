@@ -51,7 +51,7 @@ func (this *BaseController) Prepare() {
 		"unixTimeFormat": libs.UnixTimeFormat,
 	}
 
-	if !libs.CheckAccess(this.controllerName, this.actionName) {
+	if !libs.CheckAccess(this.controllerName, this.actionName, libs.AccessRoutes()) {
 		this.redirect(libs.Http_403)
 	}
 }
@@ -68,6 +68,13 @@ func (this *BaseController) ShowHtml(html HtmlTemplate) {
 	this.htmlData["homeUrl"] = this.homeUrl
 	this.htmlData["alert_messages"] = this.Alert
 	this.htmlData["breadcrumbs"] = this.Breadcrumbs.Items
+
+	if len(libs.Template.Data) > 0 {
+		for k, v := range libs.Template.Data {
+			this.htmlData[k] = v
+		}
+	}
+
 	tmpl.Execute(&htmlContent, this.htmlData)
 	this.Ctx.WriteString(htmlContent.String())
 	this.StopRun()
@@ -77,6 +84,7 @@ func (this *BaseController) ShowHtml(html HtmlTemplate) {
 func (this *BaseController) ShowJSON(data *JsonData) {
 	this.Data["json"] = data
 	this.Controller.ServeJSON()
+	this.StopRun()
 }
 
 // 是否POST提交

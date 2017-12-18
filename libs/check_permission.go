@@ -20,12 +20,12 @@ var IgnoreRoutes map[string][]string
 //404页面网址
 var Http_403 string = ""
 
-//权限检查
-func CheckAccess(controllerName, routeName string) bool {
+//获取用户全部可以访问的路由
+func AccessRoutes() map[string][]string {
 	allAccessRoutes := make(map[string][]string, 0)
 
 	//如果存在用户ID，则获取用户对应的权限
-	if (*Identify).GetId() > 0 {
+	if Identify != nil && (*Identify).GetId() > 0 {
 		allAccessRoutes = models.Route{}.ListByUserId((*Identify).GetId())
 	}
 
@@ -41,10 +41,15 @@ func CheckAccess(controllerName, routeName string) bool {
 
 	}
 
+	return allAccessRoutes
+}
+
+//权限检查
+func CheckAccess(controllerName, routeName string, allAccessRoutes map[string][]string) bool {
+
 	//检查路由
 	controllerName = strings.ToLower(controllerName)
 	routeName = strings.ToLower(routeName)
-
 	if allAccessRoutes[controllerName] != nil {
 		if utils.InSlice(routeName, allAccessRoutes[controllerName]) {
 			return true

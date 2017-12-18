@@ -136,20 +136,17 @@ func (this *AssignmentController) AjaxAdd() {
 				data.Code = 400
 				data.Message = "角色不存在"
 				this.ShowJSON(&data)
-				return
 			}
 		} else {
 			data.Code = 400
 			data.Message = "角色不能为空"
 			this.ShowJSON(&data)
-			return
 		}
 
 		if id, err := strconv.Atoi(param_user_id); err != nil {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-			return
 		} else {
 			int_param_user_id = id
 		}
@@ -190,13 +187,11 @@ func (this *AssignmentController) AjaxRemove() {
 				data.Code = 400
 				data.Message = "角色不存在"
 				this.ShowJSON(&data)
-				return
 			}
 		} else {
 			data.Code = 400
 			data.Message = "角色不能为空"
 			this.ShowJSON(&data)
-			return
 		}
 
 		if id, err := strconv.Atoi(param_user_id); err != nil {

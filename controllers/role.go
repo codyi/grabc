@@ -164,7 +164,6 @@ func (this *RoleController) AjaxAssignment() {
 			data.Code = 400
 			data.Message = "权限不能为空"
 			this.ShowJSON(&data)
-			return
 		}
 
 		var intRoleId int
@@ -172,7 +171,6 @@ func (this *RoleController) AjaxAssignment() {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-			return
 		} else {
 			intRoleId = id
 		}
@@ -209,7 +207,6 @@ func (this *RoleController) AjaxUnassignment() {
 			data.Code = 400
 			data.Message = "权限不能为空"
 			this.ShowJSON(&data)
-			return
 		}
 
 		var intRoleId int
@@ -217,7 +214,6 @@ func (this *RoleController) AjaxUnassignment() {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-			return
 		} else {
 			intRoleId = id
 		}

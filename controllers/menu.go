@@ -67,7 +67,7 @@ func (this *MenuController) Post() {
 		menuModel.Name = menu_name
 		menuModel.Order = int_menu_order
 		menuModel.Parent = int_menu_parent
-		menuModel.Route = menu_route
+		menuModel.Url = menu_route
 
 		if isInsert, _ := menuModel.Insert(); isInsert {
 			this.AddSuccessMessage("添加成功")
@@ -83,8 +83,8 @@ func (this *MenuController) Post() {
 
 	if routes != nil {
 		for _, route := range routes {
-			if !strings.Contains(route.Route, "*") {
-				selectRoutes = append(selectRoutes, route.Route)
+			if !strings.Contains(route.Url, "*") {
+				selectRoutes = append(selectRoutes, route.Url)
 			}
 		}
 	}
@@ -142,7 +142,7 @@ func (this *MenuController) Put() {
 		menuModel.Name = menu_name
 		menuModel.Order = int_menu_order
 		menuModel.Parent = int_menu_parent
-		menuModel.Route = menu_route
+		menuModel.Url = menu_route
 
 		if err := menuModel.Update(); err == nil {
 			this.AddSuccessMessage("修改成功")
@@ -158,8 +158,8 @@ func (this *MenuController) Put() {
 
 	if routes != nil {
 		for _, route := range routes {
-			if !strings.Contains(route.Route, "*") {
-				selectRoutes = append(selectRoutes, route.Route)
+			if !strings.Contains(route.Url, "*") {
+				selectRoutes = append(selectRoutes, route.Url)
 			}
 		}
 	}

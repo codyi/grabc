@@ -22,7 +22,7 @@ func (this *Form) FormHtml() string {
         <select name="menu_route" class="form-control">
         <option value="">请选择</option>
         {{range $index,$route := .routes}}
-        <option value="{{$route}}" {{if eq $route $.model.Route}}selected="selected"{{end}}>{{$route}}</option>
+        <option value="{{$route}}" {{if eq $route $.model.Url}}selected="selected"{{end}}>{{$route}}</option>
         {{end}}
         </select>
     </div>

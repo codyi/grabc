@@ -89,3 +89,14 @@ func (this AssignmentRole) FindRoleIdsByUserId(userId int) ([]int, error) {
 
 	return roleIds, nil
 }
+
+//remove current  from database
+func (this *AssignmentRole) DeleteByRoleId(roleId int) (err error) {
+	if roleId <= 0 {
+		return errors.New("角色ID不能为空")
+	}
+
+	o := orm.NewOrm()
+	_, err = o.Raw("delete from "+this.TableName()+" where role_id=?", roleId).Exec()
+	return err
+}

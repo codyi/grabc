@@ -20,7 +20,7 @@ func (this *RouteController) Index() {
 
 	if routes != nil {
 		for _, route := range routes {
-			addRoutes = append(addRoutes, route.Route)
+			addRoutes = append(addRoutes, route.Url)
 		}
 	}
 
@@ -47,7 +47,7 @@ func (this *RouteController) AjaxAdd() {
 		route := strings.TrimSpace(this.GetString("route"))
 
 		routeModel := models.Route{}
-		routeModel.Route = route
+		routeModel.Url = route
 
 		if isInsert, _ := routeModel.Insert(); isInsert {
 			data.Code = 200
@@ -75,8 +75,9 @@ func (this *RouteController) AjaxRemove() {
 		route := strings.TrimSpace(this.GetString("route"))
 
 		routeModel := models.Route{}
+		routeModel.FindByUrl(route)
 
-		if isDelete, _ := routeModel.DeleteByRoute(route); isDelete {
+		if isDelete, _ := routeModel.Delete(); isDelete {
 			data.Code = 200
 			data.Message = "删除成功"
 		} else {

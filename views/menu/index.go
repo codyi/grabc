@@ -34,7 +34,7 @@ func (this *Index) Html() string {
                         <tr>
                             <td>{{$menu.Id}}</td>
                             <td>{{$menu.Name}}</td>
-                            <td>{{$menu.Route}}</td>
+                            <td>{{$menu.Url}}</td>
                             <td>{{$menu.Order}}</td>
                             <td>{{$menu.GetParentName}}</td>
                             <td>{{unixTimeFormat $menu.CreateAt "2006-01-02"}}</td>

@@ -75,8 +75,9 @@ func (this *RouteController) AjaxRemove() {
 		route := strings.TrimSpace(this.GetString("route"))
 
 		routeModel := models.Route{}
+		routeModel.FindByUrl(route)
 
-		if isDelete, _ := routeModel.DeleteByRoute(route); isDelete {
+		if isDelete, _ := routeModel.Delete(); isDelete {
 			data.Code = 200
 			data.Message = "删除成功"
 		} else {

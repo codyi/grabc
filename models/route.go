@@ -57,22 +57,19 @@ func (this *Route) Insert() (isInsert bool, err error) {
 	return id > 0, err
 }
 
-//remove current url from database
-func (this Route) DeleteByRoute(url string) (isDelete bool, err error) {
-	if url == "" {
-		return false, errors.New("路由地址不能为空")
-	}
-	o := orm.NewOrm()
-	routeModel := &Route{}
-	o.QueryTable(this.TableName()).Filter("url", url).One(routeModel)
-
-	if !routeModel.IsNewRecord() {
+//prepare delete
+func (this *Route) PrepareDelete() error {
+	if !this.IsNewRecord() {
 		ar := AssignmentRoute{}
-		ar.DeleteByRouteId(this.Id)
+		return ar.DeleteByRouteId(this.Id)
+	} else {
+		return errors.New("删除对象为空")
 	}
+}
 
-	num, err := o.Delete(routeModel)
-
+//remove current url from database
+func (this *Route) Delete() (isDelete bool, err error) {
+	num, err := this.BaseModel.Delete(this)
 	return num > 0, err
 }
 

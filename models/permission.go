@@ -77,21 +77,6 @@ func (this *Permission) Update() (err error) {
 	return err
 }
 
-//remove current name from database
-func (this Permission) DeleteByName(name string) (isDelete bool, err error) {
-	if name == "" {
-		return false, errors.New("权限名称不能为空")
-	}
-	o := orm.NewOrm()
-
-	permissionModel := &Permission{}
-	o.QueryTable(this.TableName()).Filter("name", name).One(permissionModel)
-
-	num, err := o.Delete(permissionModel)
-
-	return num > 0, err
-}
-
 //list permissions
 func (this Permission) List(pageIndex, pageCount int) ([]*Permission, int, error) {
 	var permissions []*Permission
@@ -120,14 +105,24 @@ func (this Permission) FindAll() ([]*Permission, error) {
 	return permissions, err
 }
 
-//remove current name from database
-func (this *Permission) Delete() (isDelete bool, err error) {
-	if this.Id <= 0 {
-		return false, errors.New("数据不能为空")
+func (this *Permission) PrepareDelete() error {
+	if this.IsNewRecord() {
+		return errors.New("当前对象为空")
 	}
 
-	o := orm.NewOrm()
-	num, err := o.Delete(this)
+	routeAssignmentModel := AssignmentRoute{}
+	err := routeAssignmentModel.DeleteByPermissionId(this.Id)
 
+	if err != nil {
+		return err
+	}
+
+	assignmentPermission := AssignmentPermission{}
+	return assignmentPermission.DeleteByPermissionId(this.Id)
+}
+
+//remove current name from database
+func (this *Permission) Delete() (bool, error) {
+	num, err := this.BaseModel.Delete(this)
 	return num > 0, err
 }

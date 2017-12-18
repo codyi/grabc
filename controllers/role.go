@@ -239,3 +239,39 @@ func (this *RoleController) AjaxUnassignment() {
 
 	this.ShowJSON(&data)
 }
+
+//role delete page
+func (this *RoleController) Delete() {
+	data := JsonData{}
+	if this.isPost() {
+		role_id, err := strconv.Atoi(strings.TrimSpace(this.GetString("role_id")))
+
+		if err != nil {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+		}
+
+		roleModel := models.Role{}
+		if err := roleModel.FindById(role_id); err != nil {
+			data.Code = 400
+			data.Message = "数据获取失败"
+			this.ShowJSON(&data)
+		}
+
+		if is_delete, err := roleModel.Delete(); is_delete {
+			data.Code = 200
+			data.Message = "删除成功"
+			this.ShowJSON(&data)
+		} else {
+			data.Code = 400
+			data.Message = err.Error()
+			this.ShowJSON(&data)
+		}
+	} else {
+		data.Code = 400
+		data.Message = "非法请求"
+	}
+
+	this.ShowJSON(&data)
+}

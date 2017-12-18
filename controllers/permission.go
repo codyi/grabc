@@ -291,15 +291,6 @@ func (this *PermissionController) Delete() {
 			this.ShowJSON(&data)
 		}
 
-		routeAssignmentModel := models.AssignmentRoute{}
-		err = routeAssignmentModel.DeleteByPermissionId(permissionModel.Id)
-
-		if err != nil {
-			data.Code = 400
-			data.Message = err.Error()
-			this.ShowJSON(&data)
-		}
-
 		if is_delete, err := permissionModel.Delete(); is_delete {
 			data.Code = 200
 			data.Message = "删除成功"

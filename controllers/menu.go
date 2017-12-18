@@ -190,7 +190,6 @@ func (this *MenuController) Delete() {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-			return
 		}
 
 		menuModel := models.Menu{}
@@ -198,19 +197,16 @@ func (this *MenuController) Delete() {
 			data.Code = 400
 			data.Message = "数据获取失败"
 			this.ShowJSON(&data)
-			return
 		}
 
 		if is_delete, err := menuModel.Delete(); is_delete {
 			data.Code = 200
 			data.Message = "删除成功"
 			this.ShowJSON(&data)
-			return
 		} else {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-			return
 		}
 	} else {
 		data.Code = 400

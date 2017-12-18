@@ -185,13 +185,11 @@ func (this *PermissionController) AjaxAddRoute() {
 				data.Code = 400
 				data.Message = "路由不存在"
 				this.ShowJSON(&data)
-				return
 			}
 		} else {
 			data.Code = 400
 			data.Message = "路由不能为空"
 			this.ShowJSON(&data)
-			return
 		}
 
 		if i, err := strconv.Atoi(permissionId); err == nil {
@@ -200,7 +198,6 @@ func (this *PermissionController) AjaxAddRoute() {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-			return
 		}
 
 		if isInsert, err := routeAssignmentModel.Insert(); isInsert {
@@ -242,20 +239,17 @@ func (this *PermissionController) AjaxRemoveRoute() {
 				data.Code = 400
 				data.Message = "路由不存在"
 				this.ShowJSON(&data)
-				return
 			}
 		} else {
 			data.Code = 400
 			data.Message = "路由不能为空"
 			this.ShowJSON(&data)
-			return
 		}
 
 		if id, err := strconv.Atoi(param_permision_id); err != nil {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-			return
 		} else {
 			int_param_permission_id = id
 		}
@@ -288,7 +282,6 @@ func (this *PermissionController) Delete() {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-			return
 		}
 
 		permissionModel := models.Permission{}
@@ -296,7 +289,6 @@ func (this *PermissionController) Delete() {
 			data.Code = 400
 			data.Message = "数据获取失败"
 			this.ShowJSON(&data)
-			return
 		}
 
 		routeAssignmentModel := models.AssignmentRoute{}
@@ -306,19 +298,16 @@ func (this *PermissionController) Delete() {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-			return
 		}
 
 		if is_delete, err := permissionModel.Delete(); is_delete {
 			data.Code = 200
 			data.Message = "删除成功"
 			this.ShowJSON(&data)
-			return
 		} else {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-			return
 		}
 	} else {
 		data.Code = 400

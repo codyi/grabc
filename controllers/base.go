@@ -77,6 +77,7 @@ func (this *BaseController) ShowHtml(html HtmlTemplate) {
 func (this *BaseController) ShowJSON(data *JsonData) {
 	this.Data["json"] = data
 	this.Controller.ServeJSON()
+	this.StopRun()
 }
 
 // 是否POST提交

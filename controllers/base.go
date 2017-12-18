@@ -51,7 +51,7 @@ func (this *BaseController) Prepare() {
 		"unixTimeFormat": libs.UnixTimeFormat,
 	}
 
-	if !libs.CheckAccess(this.controllerName, this.actionName) {
+	if !libs.CheckAccess(this.controllerName, this.actionName, libs.AccessRoutes()) {
 		this.redirect(libs.Http_403)
 	}
 }
@@ -77,6 +77,7 @@ func (this *BaseController) ShowHtml(html HtmlTemplate) {
 func (this *BaseController) ShowJSON(data *JsonData) {
 	this.Data["json"] = data
 	this.Controller.ServeJSON()
+	this.StopRun()
 }
 
 // 是否POST提交

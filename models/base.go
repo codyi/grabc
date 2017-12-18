@@ -11,6 +11,7 @@ func init() {
 	orm.RegisterModel(new(Role))
 	orm.RegisterModel(new(AssignmentRole))
 	orm.RegisterModel(new(AssignmentRoute))
+	orm.RegisterModel(new(Menu))
 }
 
 type BaseModel struct {

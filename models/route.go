@@ -63,9 +63,13 @@ func (this Route) DeleteByRoute(url string) (isDelete bool, err error) {
 		return false, errors.New("路由地址不能为空")
 	}
 	o := orm.NewOrm()
-
 	routeModel := &Route{}
 	o.QueryTable(this.TableName()).Filter("url", url).One(routeModel)
+
+	if !routeModel.IsNewRecord() {
+		ar := AssignmentRoute{}
+		ar.DeleteByRouteId(this.Id)
+	}
 
 	num, err := o.Delete(routeModel)
 

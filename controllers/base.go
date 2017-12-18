@@ -68,6 +68,13 @@ func (this *BaseController) ShowHtml(html HtmlTemplate) {
 	this.htmlData["homeUrl"] = this.homeUrl
 	this.htmlData["alert_messages"] = this.Alert
 	this.htmlData["breadcrumbs"] = this.Breadcrumbs.Items
+
+	if len(libs.Template.Data) > 0 {
+		for k, v := range libs.Template.Data {
+			this.htmlData[k] = v
+		}
+	}
+
 	tmpl.Execute(&htmlContent, this.htmlData)
 	this.Ctx.WriteString(htmlContent.String())
 	this.StopRun()

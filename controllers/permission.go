@@ -139,7 +139,7 @@ func (this *PermissionController) Assignment() {
 
 		if prs != nil {
 			for _, r := range prs {
-				assignmentRoutes = append(assignmentRoutes, r.Route)
+				assignmentRoutes = append(assignmentRoutes, r.Url)
 			}
 		}
 	}
@@ -150,8 +150,8 @@ func (this *PermissionController) Assignment() {
 
 	if routes != nil {
 		for _, route := range routes {
-			if !utils.InSlice(route.Route, assignmentRoutes) {
-				allRoutes = append(allRoutes, route.Route)
+			if !utils.InSlice(route.Url, assignmentRoutes) {
+				allRoutes = append(allRoutes, route.Url)
 			}
 		}
 	}
@@ -177,7 +177,7 @@ func (this *PermissionController) AjaxAddRoute() {
 		routeAssignmentModel := models.AssignmentRoute{}
 
 		if route != "" {
-			routeModel.FindByRoute(route)
+			routeModel.FindByUrl(route)
 
 			if routeModel.Id > 0 {
 				routeAssignmentModel.RouteId = routeModel.Id
@@ -204,7 +204,7 @@ func (this *PermissionController) AjaxAddRoute() {
 			data.Code = 200
 			data.Message = "添加成功"
 			data.Data = make(map[string]interface{})
-			data.Data["route"] = routeModel.Route
+			data.Data["route"] = routeModel.Url
 		} else {
 			data.Code = 400
 			data.Message = err.Error()
@@ -231,7 +231,7 @@ func (this *PermissionController) AjaxRemoveRoute() {
 		routeModel := models.Route{}
 
 		if param_route != "" {
-			routeModel.FindByRoute(param_route)
+			routeModel.FindByUrl(param_route)
 
 			if routeModel.Id > 0 {
 				int_param_route_id = routeModel.Id
@@ -258,7 +258,7 @@ func (this *PermissionController) AjaxRemoveRoute() {
 			data.Code = 200
 			data.Message = "删除成功"
 			data.Data = make(map[string]interface{})
-			data.Data["route"] = routeModel.Route
+			data.Data["route"] = routeModel.Url
 		} else {
 			data.Code = 400
 			data.Message = err.Error()
@@ -288,15 +288,6 @@ func (this *PermissionController) Delete() {
 		if err := permissionModel.FindById(permision_id); err != nil {
 			data.Code = 400
 			data.Message = "数据获取失败"
-			this.ShowJSON(&data)
-		}
-
-		routeAssignmentModel := models.AssignmentRoute{}
-		err = routeAssignmentModel.DeleteByPermissionId(permissionModel.Id)
-
-		if err != nil {
-			data.Code = 400
-			data.Message = err.Error()
 			this.ShowJSON(&data)
 		}
 

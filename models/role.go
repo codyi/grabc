@@ -107,15 +107,25 @@ func (this Role) List(pageIndex, pageCount int) ([]*Role, int, error) {
 	return Roles, int(total), err
 }
 
-//remove current name from database
-func (this *Role) Delete() (isDelete bool, err error) {
-	if this.Id <= 0 {
-		return false, errors.New("数据不能为空")
+func (this *Role) PrepareDelete() error {
+	if this.IsNewRecord() {
+		return errors.New("当前对象为空")
 	}
 
-	o := orm.NewOrm()
-	num, err := o.Delete(this)
+	assignmentPermission := AssignmentPermission{}
+	err := assignmentPermission.DeleteByRoleId(this.Id)
 
+	if err != nil {
+		return err
+	}
+
+	assignmentRole := AssignmentRole{}
+	return assignmentRole.DeleteByRoleId(this.Id)
+}
+
+//remove current name from database
+func (this *Role) Delete() (isDelete bool, err error) {
+	num, err := this.BaseModel.Delete(this)
 	return num > 0, err
 }
 

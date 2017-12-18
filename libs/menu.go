@@ -39,7 +39,7 @@ func AccessMenus() []*MenuGroup {
 			t.Parent = m
 			tt[m.Id] = t
 		} else {
-			r := strings.Split(m.Route, "/")
+			r := strings.Split(m.Url, "/")
 			controllerName := r[0]
 			routeName := r[1]
 			if CheckAccess(controllerName, routeName, allAccessRoutes) {
@@ -60,7 +60,7 @@ func AccessMenus() []*MenuGroup {
 			continue
 		}
 
-		r := strings.Split(t.Parent.Route, "/")
+		r := strings.Split(t.Parent.Url, "/")
 		controllerName := r[0]
 		routeName := r[1]
 		if !CheckAccess(controllerName, routeName, allAccessRoutes) {
@@ -72,7 +72,7 @@ func AccessMenus() []*MenuGroup {
 		m := MenuGroup{}
 		p := newMenu{}
 		p.Name = t.Parent.Name
-		p.Url = "/" + t.Parent.Route
+		p.Url = "/" + t.Parent.Url
 
 		m.Parent = p
 
@@ -81,7 +81,7 @@ func AccessMenus() []*MenuGroup {
 		for _, m := range t.Child {
 			nm := newMenu{}
 			nm.Name = m.Name
-			nm.Url = "/" + m.Route
+			nm.Url = "/" + m.Url
 			childMenus = append(childMenus, nm)
 		}
 

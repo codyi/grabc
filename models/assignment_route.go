@@ -98,6 +98,17 @@ func (this *AssignmentRoute) DeleteByPermissionId(permissionId int) (err error) 
 	return err
 }
 
+//remove current name from database
+func (this *AssignmentRoute) DeleteByRouteId(routeId int) (err error) {
+	if routeId <= 0 {
+		return errors.New("路由ID不能为空")
+	}
+
+	o := orm.NewOrm()
+	_, err = o.Raw("delete from "+this.TableName()+" where route_id=?", routeId).Exec()
+	return err
+}
+
 //获取传入权限id的获取全部的路由ids
 func (this AssignmentRoute) FindRouteIdsByPerIds(ids []int) ([]int, error) {
 	var ra []*AssignmentRoute

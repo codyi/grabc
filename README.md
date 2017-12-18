@@ -33,8 +33,6 @@ func init() {
 	//403页面地址注册到grabc中，用于grabc插件禁止权限的页面跳转
 	grabc.Http_403("/site/nopermission")
 	//设置模板，为了让grabc更具有通用性，可以设置模板
-	//目前设置模板只支持传入模板的内容
-	grabc.SetLayout(libs.Grabc_layout, nil)
 }
 </pre>
 
@@ -45,6 +43,12 @@ grabc.RegisterIdentify(user)
 
 if !grabc.CheckAccess(this.controllerName, this.actionName) {
 	this.redirect(this.URLFor("SiteController.NoPermission"))
+} else {
+	//注册grabc的模板
+	//模板采用了grabc的动态菜单创建功能，菜单必须有权限才显示
+	menus := make(map[string]interface{}, 0)
+	menus["grabc_menus"] = grabc.AccessMenus()
+	grabc.SetLayout(libs.Grabc_layout, menus)
 }
 </pre>
 

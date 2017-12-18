@@ -10,7 +10,7 @@ type Menu struct {
 	BaseModel
 	Name       string `json:"name" label:"菜单名称"`
 	Parent     int    `json:"parent" label:"父级菜单ID"`
-	Route      string `json:"route" label:"菜单地址"`
+	Url        string `json:"url" label:"菜单地址"`
 	Order      int    `json:"order" label:"菜单排序"`
 	ParentName string `orm:"-" label:"父级菜单名称"`
 }
@@ -56,7 +56,7 @@ func (this *Menu) Insert() (isInsert bool, err error) {
 		return false, errors.New("菜单名称不能为空")
 	}
 
-	if this.Route == "" {
+	if this.Url == "" {
 		return false, errors.New("菜单路由不能为空")
 	}
 
@@ -75,7 +75,7 @@ func (this *Menu) Update() (err error) {
 		return errors.New("菜单名称不能为空")
 	}
 
-	if this.Route == "" {
+	if this.Url == "" {
 		return errors.New("菜单路由不能为空")
 	}
 

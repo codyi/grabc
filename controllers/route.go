@@ -20,7 +20,7 @@ func (this *RouteController) Index() {
 
 	if routes != nil {
 		for _, route := range routes {
-			addRoutes = append(addRoutes, route.Route)
+			addRoutes = append(addRoutes, route.Url)
 		}
 	}
 
@@ -47,7 +47,7 @@ func (this *RouteController) AjaxAdd() {
 		route := strings.TrimSpace(this.GetString("route"))
 
 		routeModel := models.Route{}
-		routeModel.Route = route
+		routeModel.Url = route
 
 		if isInsert, _ := routeModel.Insert(); isInsert {
 			data.Code = 200

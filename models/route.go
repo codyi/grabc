@@ -9,7 +9,7 @@ import (
 
 type Route struct {
 	BaseModel
-	Route string `json:"route" label:"路由地址"`
+	Url string `json:"url" label:"路由地址"`
 }
 
 func (this *Route) TableName() string {
@@ -27,24 +27,24 @@ func (this *Route) FindById(id int) error {
 }
 
 //Find one user by phone from database
-func (this *Route) FindByRoute(route string) error {
-	if route == "" {
+func (this *Route) FindByUrl(url string) error {
+	if url == "" {
 		return errors.New("路由地址不能为空")
 	}
 
 	o := orm.NewOrm()
-	return o.QueryTable(this.TableName()).Filter("route", route).One(this)
+	return o.QueryTable(this.TableName()).Filter("url", url).One(this)
 }
 
 //insert current route to database
 //not insert if route is exist
 func (this *Route) Insert() (isInsert bool, err error) {
-	if this.Route == "" {
+	if this.Url == "" {
 		return false, errors.New("路由地址不能为空")
 	}
 
 	self := Route{}
-	self.FindByRoute(this.Route)
+	self.FindByUrl(this.Url)
 	if self.Id > 0 {
 		return false, errors.New("路由地址已经存在")
 	}
@@ -57,15 +57,15 @@ func (this *Route) Insert() (isInsert bool, err error) {
 	return id > 0, err
 }
 
-//remove current route from database
-func (this Route) DeleteByRoute(route string) (isDelete bool, err error) {
-	if route == "" {
+//remove current url from database
+func (this Route) DeleteByRoute(url string) (isDelete bool, err error) {
+	if url == "" {
 		return false, errors.New("路由地址不能为空")
 	}
 	o := orm.NewOrm()
 
 	routeModel := &Route{}
-	o.QueryTable(this.TableName()).Filter("route", route).One(routeModel)
+	o.QueryTable(this.TableName()).Filter("url", url).One(routeModel)
 
 	num, err := o.Delete(routeModel)
 
@@ -131,7 +131,7 @@ func (this Route) ListByUserId(user_id int) map[string][]string {
 	}
 
 	for _, r := range rs {
-		t := strings.Split(r.Route, "/")
+		t := strings.Split(r.Url, "/")
 		if routes[t[0]] == nil {
 			routes[t[0]] = make([]string, 0)
 		}

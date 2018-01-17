@@ -56,13 +56,17 @@ func Http_403(url string) {
 }
 
 //设置grabc的模板
-func SetLayout(s string, layoutData map[string]interface{}) {
-	libs.Template = libs.GrabcTemplate{}
-	libs.Template.Layout = s
+func SetLayout(l string, layoutData map[string]interface{}) {
+	libs.Template.Layout = l
 	libs.Template.Data = layoutData
 }
 
 //返回用户可以看到的导航
 func AccessMenus() []*libs.MenuGroup {
 	return libs.AccessMenus()
+}
+
+//设置模板的路径
+func SetViewPath(path string) {
+	libs.Template.ViewPath = path
 }

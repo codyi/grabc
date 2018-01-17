@@ -1,16 +1,5 @@
-package role
 
-import (
-	. "github.com/codyi/grabc/views/layout"
-)
-
-type Post struct {
-	BaseTemplate
-	Form
-}
-
-func (this *Post) Html() string {
-	html := `
+{{.global_css}}
 <div class="box box-info">
     <div class="box-body">
         <form action="/role/post" method="post" class="form-horizontal">
@@ -18,7 +7,4 @@ func (this *Post) Html() string {
 		</form>
     </div>
 </div>
-	`
-
-	return this.DealHtml(html)
-}
+{{.global_js}}

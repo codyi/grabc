@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/codyi/grabc/libs"
 	"github.com/codyi/grabc/models"
-	"github.com/codyi/grabc/views/menu"
 	"strconv"
 	"strings"
 )
@@ -37,7 +36,7 @@ func (this *MenuController) Index() {
 	this.htmlData["menus"] = menus
 	this.htmlData["pages"] = pagination
 	this.AddBreadcrumbs("菜单管理", this.URLFor("MenuController.Index"))
-	this.ShowHtml(&menu.Index{})
+	this.ShowHtml()
 }
 
 //添加菜单页面
@@ -102,7 +101,7 @@ func (this *MenuController) Post() {
 	this.htmlData["parents"] = selectParents
 	this.AddBreadcrumbs("菜单管理", this.URLFor("MenuController.Index"))
 	this.AddBreadcrumbs("新增", this.URLFor("MenuController.Add"))
-	this.ShowHtml(&menu.Post{})
+	this.ShowHtml()
 }
 
 //修改菜单页面
@@ -177,7 +176,7 @@ func (this *MenuController) Put() {
 	this.htmlData["parents"] = selectParents
 	this.AddBreadcrumbs("菜单管理", this.URLFor("MenuController.Index"))
 	this.AddBreadcrumbs("修改", this.URLFor("MenuController.Put", "menu_id", menu_id))
-	this.ShowHtml(&menu.Put{})
+	this.ShowHtml()
 }
 
 //删除菜单

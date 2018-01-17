@@ -1,15 +1,4 @@
-package assignment
-
-import (
-	. "github.com/codyi/grabc/views/layout"
-)
-
-type User struct {
-	BaseTemplate
-}
-
-func (this *User) Html() string {
-	html := `
+{{.global_css}}
 <div class="box box-info">
     <div class="box-header">
         授权用户：<span>{{.name}}</span>
@@ -40,6 +29,7 @@ func (this *User) Html() string {
         <input type="hidden" name="user_id" id="user_id" value="{{.user_id}}">
     </div>
 </div>
+{{.global_js}}
 <script>
     var unassignment_roles = new Array();
     var assignment_roles = new Array();
@@ -122,6 +112,3 @@ func (this *User) Html() string {
         });
     };
 </script>
-`
-	return this.DealHtml(html)
-}

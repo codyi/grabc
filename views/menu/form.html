@@ -1,15 +1,4 @@
-package menu
-
-import (
-	. "github.com/codyi/grabc/views/layout"
-)
-
-type Form struct {
-	BaseTemplate
-}
-
-func (this *Form) FormHtml() string {
-	html := `
+{{.global_css}}
 <div class="form-group required">
     <label class="control-label col-sm-2" for="menu_name">菜单名称</label>
     <div class="col-sm-4">
@@ -50,6 +39,4 @@ func (this *Form) FormHtml() string {
         <button type="submit" class="btn btn-success">保存</button>
     </div>
 </div>
-`
-	return html
-}
+{{.global_js}}

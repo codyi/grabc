@@ -4,7 +4,6 @@ import (
 	"github.com/astaxie/beego/utils"
 	"github.com/codyi/grabc/libs"
 	"github.com/codyi/grabc/models"
-	"github.com/codyi/grabc/views/route"
 	"strings"
 )
 
@@ -36,7 +35,7 @@ func (this *RouteController) Index() {
 	this.htmlData["notAddRoutes"] = notAddRoutes
 	this.htmlData["addRoutes"] = addRoutes
 	this.AddBreadcrumbs("路由管理", this.URLFor("RouteController.Index"))
-	this.ShowHtml(&route.Index{})
+	this.ShowHtml()
 }
 
 //route ajax add page

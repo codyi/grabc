@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"github.com/astaxie/beego"
 	"github.com/codyi/grabc/libs"
+	"path/filepath"
 	"strings"
 	"text/template"
 )
@@ -57,17 +58,22 @@ func (this *BaseController) Prepare() {
 }
 
 //显示页面
-func (this *BaseController) ShowHtml(html HtmlTemplate) {
-	tmpl, err := template.New("grabc").Funcs(this.funcMap).Parse(html.Html())
+func (this *BaseController) ShowHtml(tpl ...string) {
+	var tplName string
 
-	if err != nil {
-		this.Ctx.WriteString(err.Error())
+	if len(tpl) > 0 {
+		tplName = libs.Template.ViewPath + tpl[0]
+	} else {
+		tplName = libs.Template.ViewPath + this.controllerName + "/" + this.actionName + ".html"
 	}
 
-	var htmlContent bytes.Buffer
+	var viewContent bytes.Buffer
 	this.htmlData["homeUrl"] = this.homeUrl
+	this.htmlData["viewpaht"] = libs.Template.ViewPath
 	this.htmlData["alert_messages"] = this.Alert
 	this.htmlData["breadcrumbs"] = this.Breadcrumbs.Items
+	this.htmlData["global_css"] = libs.Template.GlobalCss()
+	this.htmlData["global_js"] = libs.Template.GlobalJs()
 
 	if len(libs.Template.Data) > 0 {
 		for k, v := range libs.Template.Data {
@@ -75,7 +81,29 @@ func (this *BaseController) ShowHtml(html HtmlTemplate) {
 		}
 	}
 
-	tmpl.Execute(&htmlContent, this.htmlData)
+	//渲染视图模板
+	tmpl, err := template.New(filepath.Base(tplName)).Funcs(this.funcMap).ParseFiles(tplName)
+
+	if err != nil {
+		this.Ctx.WriteString(err.Error())
+		this.StopRun()
+	}
+
+	tmpl.Execute(&viewContent, this.htmlData)
+
+	//渲染layout模板
+	tmpl, err = template.New(filepath.Base(libs.Template.Layout)).ParseFiles(libs.Template.Layout)
+
+	if err != nil {
+		this.Ctx.WriteString(err.Error())
+		this.StopRun()
+	}
+
+	libs.Template.Data["LayoutContent"] = viewContent.String()
+	libs.Template.Data["grabc_menus"] = libs.AccessMenus()
+	var htmlContent bytes.Buffer
+	tmpl.Execute(&htmlContent, libs.Template.Data)
+
 	this.Ctx.WriteString(htmlContent.String())
 	this.StopRun()
 }

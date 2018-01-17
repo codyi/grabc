@@ -4,7 +4,6 @@ import (
 	"github.com/astaxie/beego/utils"
 	"github.com/codyi/grabc/libs"
 	"github.com/codyi/grabc/models"
-	"github.com/codyi/grabc/views/assignment"
 	"strconv"
 	"strings"
 )
@@ -67,7 +66,7 @@ func (this *AssignmentController) Index() {
 	this.htmlData["userItems"] = userItems
 	this.htmlData["pages"] = pagination
 	this.AddBreadcrumbs("授权管理", this.URLFor("AssignmentController.Index"))
-	this.ShowHtml(&assignment.Index{})
+	this.ShowHtml()
 }
 
 //用户授权
@@ -116,7 +115,7 @@ func (this *AssignmentController) User() {
 	this.htmlData["assignmentRoles"] = assignmentRoles
 	this.htmlData["unassignmentRoles"] = unassignmentRoles
 	this.AddBreadcrumbs("用户授权", this.URLFor("AssignmentController.Index"))
-	this.ShowHtml(&assignment.User{})
+	this.ShowHtml()
 }
 
 func (this *AssignmentController) AjaxAdd() {

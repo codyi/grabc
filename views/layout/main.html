@@ -12,6 +12,11 @@
 		  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
       <script src="https://cdn.bootcss.com/admin-lte/2.4.2/js/adminlte.min.js"></script>
 		  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <style type="text/css">
+        .content-header{
+          height: 40px
+        }
+      </style>
     </head>
         <body class="skin-blue sidebar-mini">
         <div class="wrapper">
@@ -58,6 +63,27 @@
               <!-- /.sidebar -->
             </aside>
             <div class="content-wrapper">
+              <section class="content-header">
+                <ul class="breadcrumb">
+                <li>
+                    <a href='{{.homeUrl}}'>
+                      <span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span>
+                      首页
+                    </a>
+                  </li>
+                  {{range $breadcrumb := .breadcrumbs}}
+                  <li>
+                    {{if eq $breadcrumb.Url ""}}
+                      {{$breadcrumb.Label}}
+                    {{else}}
+                    <a href='{{$breadcrumb.Url}}'>
+                      {{$breadcrumb.Label}}
+                    </a>
+                    {{end}}
+                  </li>
+                  {{end}}
+                </ul>
+              </section>
               <section class="content">
                 {{.LayoutContent}}
               </section>

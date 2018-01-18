@@ -4,7 +4,6 @@ import (
 	"github.com/astaxie/beego/utils"
 	"github.com/codyi/grabc/libs"
 	"github.com/codyi/grabc/models"
-	"github.com/codyi/grabc/views/permission"
 	"strconv"
 	"strings"
 )
@@ -34,10 +33,10 @@ func (this *PermissionController) Index() {
 	}
 
 	pagination.PageTotal = pageTotal
-	this.htmlData["permissions"] = permissions
-	this.htmlData["pages"] = pagination
+	this.Data["permissions"] = permissions
+	this.Data["pages"] = pagination
 	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
-	this.ShowHtml(&permission.Index{})
+	this.ShowHtml()
 }
 
 //permision add page
@@ -59,10 +58,10 @@ func (this *PermissionController) Add() {
 
 	}
 
-	this.htmlData["model"] = permissionModel
+	this.Data["model"] = permissionModel
 	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
 	this.AddBreadcrumbs("新增", this.URLFor("PermissionController.Add"))
-	this.ShowHtml(&permission.Add{})
+	this.ShowHtml()
 }
 
 //permision update page
@@ -93,11 +92,11 @@ func (this *PermissionController) Put() {
 
 	}
 
-	this.htmlData["model"] = permissionModel
+	this.Data["model"] = permissionModel
 	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
 	this.AddBreadcrumbs("修改", this.URLFor("PermissionController.Put", "permission_id", permission_id))
 	this.AddBreadcrumbs(permissionModel.Name, "")
-	this.ShowHtml(&permission.Update{})
+	this.ShowHtml()
 }
 
 //permision view page
@@ -156,13 +155,13 @@ func (this *PermissionController) Assignment() {
 		}
 	}
 
-	this.htmlData["model"] = permissionModel
-	this.htmlData["allRoutes"] = allRoutes
-	this.htmlData["assignmentRoutes"] = assignmentRoutes
+	this.Data["model"] = permissionModel
+	this.Data["allRoutes"] = allRoutes
+	this.Data["assignmentRoutes"] = assignmentRoutes
 	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
 	this.AddBreadcrumbs("授权", this.URLFor("PermissionController.Assignment", "permission_id", permission_id))
 	this.AddBreadcrumbs(permissionModel.Name, "")
-	this.ShowHtml(&permission.Assignment{})
+	this.ShowHtml()
 }
 
 //route permission ajax add page

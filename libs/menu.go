@@ -1,6 +1,7 @@
 package libs
 
 import (
+	"fmt"
 	"github.com/codyi/grabc/models"
 	"strings"
 )
@@ -9,6 +10,7 @@ import (
 type newMenu struct {
 	Url  string
 	Name string
+	Icon string
 }
 
 type MenuGroup struct {
@@ -21,73 +23,145 @@ func AccessMenus() []*MenuGroup {
 	returnMenus := make([]*MenuGroup, 0)
 	menu := models.Menu{}
 	menus, err := menu.ListAll()
+
 	if err != nil {
 		return returnMenus
 	}
 
-	allAccessRoutes := AccessRoutes()
-	type temp struct {
-		Parent *models.Menu
-		Child  []*models.Menu
-	}
-
-	tt := make(map[int]temp, 0)
-	//归类子菜单，并检查完子菜单权限
-	for _, m := range menus {
-		if m.Parent == 0 {
-			t := temp{}
-			t.Parent = m
-			tt[m.Id] = t
+	//找出全部的子菜单、父级菜单
+	parentMenus := make([]*models.Menu, 0)
+	childMenus := make([]*models.Menu, 0)
+	for _, menu := range menus {
+		if menu.Parent == 0 {
+			parentMenus = append(parentMenus, menu)
 		} else {
-			r := strings.Split(m.Url, "/")
+			childMenus = append(childMenus, menu)
+		}
+	}
+	//归类菜单,并检查权限
+	allAccessRoutes := AccessRoutes()
+
+	for _, parentMenu := range parentMenus {
+		mg := MenuGroup{}
+		mg.Child = make([]newMenu, 0)
+
+		//查找子菜单、并检查权限
+		for _, childMenu := range childMenus {
+			if childMenu.Parent != parentMenu.Id {
+				continue
+			}
+
+			r := strings.Split(childMenu.Url, "/")
+			controllerName := r[0]
+			routeName := r[1]
+
+			if CheckAccess(controllerName, routeName, allAccessRoutes) {
+				cm := newMenu{}
+				cm.Name = childMenu.Name
+				cm.Url = "/" + childMenu.Url
+				cm.Icon = childMenu.Icon
+				mg.Child = append(mg.Child, cm)
+			}
+		}
+
+		//如果不存在子菜单，将检查父级菜单的权限
+		if len(mg.Child) == 0 {
+			r := strings.Split(parentMenu.Url, "/")
 			controllerName := r[0]
 			routeName := r[1]
 			if CheckAccess(controllerName, routeName, allAccessRoutes) {
-				t := tt[m.Parent]
-				if t.Parent == nil && len(t.Child) == 0 {
-					t = temp{}
-				}
+				mg.Parent = newMenu{}
+				mg.Parent.Name = parentMenu.Name
+				mg.Parent.Url = "/" + parentMenu.Url
+				mg.Parent.Icon = parentMenu.Icon
+			}
+		} else {
+			mg.Parent = newMenu{}
+			mg.Parent.Name = parentMenu.Name
+			mg.Parent.Url = "/" + parentMenu.Url
+			mg.Parent.Icon = parentMenu.Icon
+		}
 
-				t.Child = append(t.Child, m)
-				tt[m.Parent] = t
+		returnMenus = append(returnMenus, &mg)
+	}
+
+	return returnMenus
+}
+
+func ShowMenu(controllName, actionName string) string {
+	var activeUrl = ""
+	menus := AccessMenus()
+	//先进行精准的匹配选中的url链接
+	for _, menu := range menus {
+		if len(menu.Child) > 0 {
+			for _, childMenu := range menu.Child {
+				if strings.ToLower("/"+controllName+"/"+actionName) == strings.ToLower(childMenu.Url) {
+					activeUrl = childMenu.Url
+					goto SHOW
+				}
+			}
+		} else {
+			if strings.ToLower("/"+controllName+"/"+actionName) == strings.ToLower(menu.Parent.Url) {
+				activeUrl = menu.Parent.Url
+				goto SHOW
 			}
 		}
 	}
 
-	//检查完父级菜单权限，如果有子菜单，这个父级菜单将显示
-	for i, t := range tt {
-		if len(t.Child) > 0 {
-			continue
-		}
-
-		r := strings.Split(t.Parent.Url, "/")
-		controllerName := r[0]
-		routeName := r[1]
-		if !CheckAccess(controllerName, routeName, allAccessRoutes) {
-			delete(tt, i)
+	//如果精准没有找到，则尝试模糊查询
+	//规则：只匹配controller的名称
+	for _, menu := range menus {
+		if len(menu.Child) > 0 {
+			for _, childMenu := range menu.Child {
+				if strings.Index(childMenu.Url, controllName) == 1 {
+					activeUrl = childMenu.Url
+					goto SHOW
+				}
+			}
+		} else {
+			if strings.Index(menu.Parent.Url, controllName) == 1 {
+				activeUrl = menu.Parent.Url
+				goto SHOW
+			}
 		}
 	}
+SHOW:
 
-	for _, t := range tt {
-		m := MenuGroup{}
-		p := newMenu{}
-		p.Name = t.Parent.Name
-		p.Url = "/" + t.Parent.Url
+	html := `<ul class='sidebar-menu tree' data-widget='tree'>`
+	for _, menu := range menus {
+		if len(menu.Child) > 0 {
+			childHtml := ""
+			isActiveChild := false
+			for _, childMenu := range menu.Child {
+				activeClass := ""
 
-		m.Parent = p
+				if activeUrl == childMenu.Url {
+					activeClass = "active"
+					isActiveChild = true
+				}
 
-		childMenus := make([]newMenu, 0)
+				childHtml += fmt.Sprintf(`<li class="%s"><a href='%s'><i class="fa %s"></i>%s</a></li>`, activeClass, childMenu.Url, childMenu.Icon, childMenu.Name)
+			}
 
-		for _, m := range t.Child {
-			nm := newMenu{}
-			nm.Name = m.Name
-			nm.Url = "/" + m.Url
-			childMenus = append(childMenus, nm)
+			s := `<li class='treeview %s'><a href='#'><i class="fa %s"></i><span>%s</span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a><ul class='treeview-menu'>%s</ul></li>`
+			if isActiveChild {
+				html += fmt.Sprintf(s, "active menu-open", menu.Parent.Icon, menu.Parent.Name, childHtml)
+			} else {
+				html += fmt.Sprintf(s, "", menu.Parent.Icon, menu.Parent.Name, childHtml)
+			}
+		} else {
+			activeClass := ""
+			s := `<li class='%s'><a href='%s'><i class="fa %s"></i><span>%s</span></a></li>`
+
+			if activeUrl == menu.Parent.Url {
+				activeClass = "active"
+			}
+
+			html += fmt.Sprintf(s, activeClass, menu.Parent.Url, menu.Parent.Icon, menu.Parent.Name)
 		}
 
-		m.Child = childMenus
-		returnMenus = append(returnMenus, &m)
 	}
 
-	return returnMenus
+	html += `</ul>`
+	return html
 }

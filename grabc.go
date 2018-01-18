@@ -76,7 +76,7 @@ func SetLayout(name string, path string) {
 }
 
 //设置grabc的模板的数据
-func SetLayoutData(name string, value interface{}) {
+func AddLayoutData(name string, value interface{}) {
 	libs.Template.Data[name] = value
 }
 

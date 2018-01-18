@@ -97,16 +97,53 @@ func AccessMenus() []*MenuGroup {
 }
 
 func ShowMenu(controllName, actionName string) string {
-	html := `<ul class='sidebar-menu tree' data-widget='tree'>`
-	for _, menu := range AccessMenus() {
+	var activeUrl = ""
+	menus := AccessMenus()
+	//先进行精准的匹配选中的url链接
+	for _, menu := range menus {
+		if len(menu.Child) > 0 {
+			for _, childMenu := range menu.Child {
+				if strings.ToLower("/"+controllName+"/"+actionName) == strings.ToLower(childMenu.Url) {
+					activeUrl = childMenu.Url
+					goto SHOW
+				}
+			}
+		} else {
+			if strings.ToLower("/"+controllName+"/"+actionName) == strings.ToLower(menu.Parent.Url) {
+				activeUrl = menu.Parent.Url
+				goto SHOW
+			}
+		}
+	}
 
+	//如果精准没有找到，则尝试模糊查询
+	//规则：只匹配controller的名称
+	for _, menu := range menus {
+		if len(menu.Child) > 0 {
+			for _, childMenu := range menu.Child {
+				if strings.Index(childMenu.Url, controllName) == 1 {
+					activeUrl = childMenu.Url
+					goto SHOW
+				}
+			}
+		} else {
+			if strings.Index(menu.Parent.Url, controllName) == 1 {
+				activeUrl = menu.Parent.Url
+				goto SHOW
+			}
+		}
+	}
+SHOW:
+
+	html := `<ul class='sidebar-menu tree' data-widget='tree'>`
+	for _, menu := range menus {
 		if len(menu.Child) > 0 {
 			childHtml := ""
 			isActiveChild := false
 			for _, childMenu := range menu.Child {
 				activeClass := ""
 
-				if strings.ToLower("/"+controllName+"/"+actionName) == strings.ToLower(childMenu.Url) {
+				if activeUrl == childMenu.Url {
 					activeClass = "active"
 					isActiveChild = true
 				}
@@ -124,7 +161,7 @@ func ShowMenu(controllName, actionName string) string {
 			activeClass := ""
 			s := `<li class='treeview %s'><a href='%s'><i class="fa %s"></i><span>%s</span></a></li>`
 
-			if strings.ToLower("/"+controllName+"/"+actionName) == strings.ToLower(menu.Parent.Url) {
+			if activeUrl == menu.Parent.Url {
 				activeClass = "active"
 			}
 

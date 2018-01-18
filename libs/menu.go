@@ -75,6 +75,7 @@ func AccessMenus() []*MenuGroup {
 		p := newMenu{}
 		p.Name = t.Parent.Name
 		p.Url = "/" + t.Parent.Url
+		p.Icon = t.Parent.Icon
 
 		m.Parent = p
 
@@ -84,6 +85,7 @@ func AccessMenus() []*MenuGroup {
 			nm := newMenu{}
 			nm.Name = m.Name
 			nm.Url = "/" + m.Url
+			nm.Icon = m.Icon
 			childMenus = append(childMenus, nm)
 		}
 
@@ -109,10 +111,10 @@ func ShowMenu(controllName, actionName string) string {
 					isActiveChild = true
 				}
 
-				childHtml += fmt.Sprintf(`<li class="%s"><a href='%s'>%s%s</a></li>`, activeClass, childMenu.Url, childMenu.Icon, childMenu.Name)
+				childHtml += fmt.Sprintf(`<li class="%s"><a href='%s'><i class="fa %s"></i>%s</a></li>`, activeClass, childMenu.Url, childMenu.Icon, childMenu.Name)
 			}
 
-			s := `<li class='treeview %s'><a href='#'>%s<span>%s</span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a><ul class='treeview-menu'>%s</ul></li>`
+			s := `<li class='treeview %s'><a href='#'><i class="fa %s"></i><span>%s</span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a><ul class='treeview-menu'>%s</ul></li>`
 			if isActiveChild {
 				html += fmt.Sprintf(s, "active menu-open", menu.Parent.Icon, menu.Parent.Name, childHtml)
 			} else {
@@ -120,7 +122,7 @@ func ShowMenu(controllName, actionName string) string {
 			}
 		} else {
 			activeClass := ""
-			s := `<li class='treeview %s'><a href='%s'>%s<span>%s</span></a></li>`
+			s := `<li class='treeview %s'><a href='%s'><i class="fa %s"></i><span>%s</span></a></li>`
 
 			if strings.ToLower("/"+controllName+"/"+actionName) == strings.ToLower(menu.Parent.Url) {
 				activeClass = "active"

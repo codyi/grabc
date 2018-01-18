@@ -14,18 +14,20 @@
                         <td>菜单路由</td>
                         <td>菜单排序</td>
                         <td>父级菜单</td>
+                        <td>菜单图标</td>
                         <td>创建时间</td>
                         <td class="row_operate">操作</td>
                     </tr>
                 </thead>
                 <tbody>
-                {{range $index,$menu:=.menus}}
+                {{range $index,$menu:=.menulist}}
                     <tr>
                         <td>{{$menu.Id}}</td>
                         <td>{{$menu.Name}}</td>
                         <td>{{$menu.Url}}</td>
                         <td>{{$menu.Order}}</td>
                         <td>{{$menu.GetParentName}}</td>
+                        <td><i class="fa {{$menu.Icon}}"></i></td>
                         <td>{{unixTimeFormat $menu.CreateAt "2006-01-02"}}</td>
                         <td>
                             <a href="/menu/put?menu_id={{$menu.Id}}" title="更新">

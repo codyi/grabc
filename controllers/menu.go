@@ -33,7 +33,7 @@ func (this *MenuController) Index() {
 	}
 
 	pagination.PageTotal = pageTotal
-	this.htmlData["menus"] = menus
+	this.htmlData["menulist"] = menus
 	this.htmlData["pages"] = pagination
 	this.AddBreadcrumbs("菜单管理", this.URLFor("MenuController.Index"))
 	this.ShowHtml()
@@ -48,6 +48,7 @@ func (this *MenuController) Post() {
 		menu_order := strings.TrimSpace(this.GetString("menu_order"))
 		menu_route := strings.TrimSpace(this.GetString("menu_route"))
 		menu_parent := strings.TrimSpace(this.GetString("menu_parent"))
+		menu_icon := strings.TrimSpace(this.GetString("menu_icon"))
 
 		var int_menu_order, int_menu_parent int
 
@@ -67,6 +68,7 @@ func (this *MenuController) Post() {
 		menuModel.Order = int_menu_order
 		menuModel.Parent = int_menu_parent
 		menuModel.Url = menu_route
+		menuModel.Icon = menu_icon
 
 		if isInsert, _ := menuModel.Insert(); isInsert {
 			this.AddSuccessMessage("添加成功")
@@ -123,6 +125,7 @@ func (this *MenuController) Put() {
 		menu_order := strings.TrimSpace(this.GetString("menu_order"))
 		menu_route := strings.TrimSpace(this.GetString("menu_route"))
 		menu_parent := strings.TrimSpace(this.GetString("menu_parent"))
+		menu_icon := strings.TrimSpace(this.GetString("menu_icon"))
 
 		var int_menu_order, int_menu_parent int
 
@@ -142,6 +145,7 @@ func (this *MenuController) Put() {
 		menuModel.Order = int_menu_order
 		menuModel.Parent = int_menu_parent
 		menuModel.Url = menu_route
+		menuModel.Icon = menu_icon
 
 		if err := menuModel.Update(); err == nil {
 			this.AddSuccessMessage("修改成功")

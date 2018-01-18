@@ -11,6 +11,7 @@ type Menu struct {
 	Name       string `json:"name" label:"菜单名称"`
 	Parent     int    `json:"parent" label:"父级菜单ID"`
 	Url        string `json:"url" label:"菜单地址"`
+	Icon       string `json:"icon" label:"菜单图标"`
 	Order      int    `json:"order" label:"菜单排序"`
 	ParentName string `orm:"-" label:"父级菜单名称"`
 }

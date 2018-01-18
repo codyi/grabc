@@ -1,15 +1,4 @@
-package permission
-
-import (
-	. "github.com/codyi/grabc/views/layout"
-)
-
-type Assignment struct {
-	BaseTemplate
-}
-
-func (this *Assignment) Html() string {
-	html := `
+{{str2html .global_css}}
 <div class="box box-info">
     <div class="box-body">
         <table class="table route_warp">
@@ -37,6 +26,7 @@ func (this *Assignment) Html() string {
         <input type="hidden" name="permission_id" id="permission_id" value="{{.model.Id}}">
     </div>
 </div>
+{{str2html .global_js}}
 <script>
     var unassignment_routes = new Array();
     var assignment_routes = new Array();
@@ -119,7 +109,3 @@ func (this *Assignment) Html() string {
         });
     };
 </script>
-	`
-
-	return this.DealHtml(html)
-}

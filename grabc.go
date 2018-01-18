@@ -5,6 +5,8 @@ import (
 	"github.com/codyi/grabc/controllers"
 	"github.com/codyi/grabc/libs"
 	"github.com/codyi/grabc/models"
+	"os"
+	"path/filepath"
 )
 
 //init function
@@ -17,6 +19,17 @@ func init() {
 	beego.AutoRouter(&controllers.MenuController{})
 	libs.IgnoreRoutes = make(map[string][]string, 0)
 	RegisterController(&controllers.RouteController{}, &controllers.RoleController{}, &controllers.PermissionController{}, &controllers.AssignmentController{}, &controllers.MenuController{})
+
+	//设置grabc页面路径
+	//如果使用默认的，不要设置或者置空
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	SetViewPath(filepath.Dir(dir) + "/github.com/codyi/grabc/views/")
+	SetLayout("main.html", filepath.Dir(dir)+"/github.com/codyi/grabc/views/layout/")
 }
 
 //注册需要检查的routes
@@ -56,13 +69,24 @@ func Http_403(url string) {
 }
 
 //设置grabc的模板
-func SetLayout(s string, layoutData map[string]interface{}) {
-	libs.Template = libs.GrabcTemplate{}
-	libs.Template.Layout = s
-	libs.Template.Data = layoutData
+func SetLayout(name string, path string) {
+	libs.Template.LayoutName = name
+	libs.Template.LayoutPath = path
+	beego.AddViewPath(libs.Template.LayoutPath)
+}
+
+//设置grabc的模板的数据
+func AddLayoutData(name string, value interface{}) {
+	libs.Template.Data[name] = value
 }
 
 //返回用户可以看到的导航
 func AccessMenus() []*libs.MenuGroup {
 	return libs.AccessMenus()
+}
+
+//设置模板的路径
+func SetViewPath(path string) {
+	libs.Template.ViewPath = path
+	beego.AddViewPath(libs.Template.ViewPath)
 }

@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"github.com/astaxie/beego"
 	"github.com/codyi/grabc/libs"
+	// "path/filepath"
+	"html/template"
 	"strings"
-	"text/template"
 )
 
 func init() {
 	libs.ExceptMethodAppend("ShowHtml", "ShowJSON")
+	beego.AddFuncMap("unixTimeFormat", libs.UnixTimeFormat)
+	beego.AddFuncMap("pagination", libs.PaginationRender)
 }
 
 type HtmlTemplate interface {
@@ -29,7 +32,6 @@ type BaseController struct {
 	libs.Breadcrumbs
 	controllerName string
 	actionName     string
-	htmlData       map[interface{}]interface{}
 	funcMap        template.FuncMap
 	homeUrl        string
 }
@@ -42,41 +44,96 @@ func (this *BaseController) redirect(url string) {
 
 // Prepare
 func (this *BaseController) Prepare() {
-	this.htmlData = make(map[interface{}]interface{})
 	controlerName, actionName := this.GetControllerAndAction()
 	this.controllerName = strings.ToLower(controlerName[0 : len(controlerName)-10])
 	this.actionName = strings.ToLower(actionName)
-	this.funcMap = template.FuncMap{
-		"pagination":     libs.PaginationRender,
-		"unixTimeFormat": libs.UnixTimeFormat,
-	}
 
 	if !libs.CheckAccess(this.controllerName, this.actionName, libs.AccessRoutes()) {
 		this.redirect(libs.Http_403)
 	}
 }
 
-//显示页面
-func (this *BaseController) ShowHtml(html HtmlTemplate) {
-	tmpl, err := template.New("grabc").Funcs(this.funcMap).Parse(html.Html())
+// RenderBytes returns the bytes of rendered template string. Do not send out response.
+func (c *BaseController) RenderBytes() ([]byte, error) {
+	buf, err := c.renderTemplate()
+	//if the controller has set layout, then first get the tplName's content set the content to the layout
+	if err == nil && libs.Template.LayoutName != "" {
+		c.Data["LayoutContent"] = template.HTML(buf.String())
 
+		if c.LayoutSections != nil {
+			for sectionName, sectionTpl := range c.LayoutSections {
+				if sectionTpl == "" {
+					c.Data[sectionName] = ""
+					continue
+				}
+				buf.Reset()
+				err = beego.ExecuteViewPathTemplate(&buf, sectionTpl, libs.Template.LayoutPath, c.Data)
+				if err != nil {
+					return nil, err
+				}
+				c.Data[sectionName] = template.HTML(buf.String())
+			}
+		}
+
+		buf.Reset()
+		beego.ExecuteViewPathTemplate(&buf, libs.Template.LayoutName, libs.Template.LayoutPath, c.Data)
+	}
+	return buf.Bytes(), err
+}
+
+// Render sends the response with rendered template bytes as text/html type.
+func (c *BaseController) Render() error {
+	rb, err := c.RenderBytes()
 	if err != nil {
-		this.Ctx.WriteString(err.Error())
+		return err
 	}
 
-	var htmlContent bytes.Buffer
-	this.htmlData["homeUrl"] = this.homeUrl
-	this.htmlData["alert_messages"] = this.Alert
-	this.htmlData["breadcrumbs"] = this.Breadcrumbs.Items
+	if c.Ctx.ResponseWriter.Header().Get("Content-Type") == "" {
+		c.Ctx.Output.Header("Content-Type", "text/html; charset=utf-8")
+	}
+
+	return c.Ctx.Output.Body(rb)
+}
+
+func (c *BaseController) renderTemplate() (bytes.Buffer, error) {
+	var buf bytes.Buffer
+	if c.TplName == "" {
+		c.TplName = strings.ToLower(c.controllerName) + "/" + strings.ToLower(c.actionName) + "." + c.TplExt
+	}
+	if c.TplPrefix != "" {
+		c.TplName = c.TplPrefix + c.TplName
+	}
+	return buf, beego.ExecuteViewPathTemplate(&buf, c.TplName, libs.Template.ViewPath, c.Data)
+}
+
+//重新定义beego的render
+func (this *BaseController) ShowHtml(tpl ...string) {
+	if len(tpl) > 0 {
+		this.TplName = tpl[0]
+	} else {
+		this.TplName = this.controllerName + "/" + this.actionName + ".html"
+	}
+
+	this.Data["homeUrl"] = this.homeUrl
+	this.Data["viewpaht"] = libs.Template.ViewPath
+	this.Data["alert_messages"] = this.Alert
+	this.Data["global_css"] = libs.Template.GlobalCss()
+	this.Data["global_js"] = libs.Template.GlobalJs()
+	this.Data["alert"] = this.ShowAlert()
+	this.Data["breadcrumbs"] = this.ShowBreadcrumbs()
+	this.Data["menus"] = libs.ShowMenu(this.controllerName, this.actionName)
 
 	if len(libs.Template.Data) > 0 {
-		for k, v := range libs.Template.Data {
-			this.htmlData[k] = v
+		for name, value := range libs.Template.Data {
+			if _, isExist := this.Data[name]; isExist {
+				panic("设置layout数据失败，因为" + name + "已经存在")
+			}
+
+			this.Data[name] = value
 		}
 	}
 
-	tmpl.Execute(&htmlContent, this.htmlData)
-	this.Ctx.WriteString(htmlContent.String())
+	this.Render()
 	this.StopRun()
 }
 

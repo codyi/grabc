@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/codyi/grabc/libs"
 	"github.com/codyi/grabc/models"
-	"github.com/codyi/grabc/views/role"
 	"strconv"
 	"strings"
 )
@@ -34,10 +33,10 @@ func (this *RoleController) Index() {
 	}
 
 	pagination.PageTotal = pageTotal
-	this.htmlData["roles"] = roles
-	this.htmlData["pages"] = pagination
+	this.Data["roles"] = roles
+	this.Data["pages"] = pagination
 	this.AddBreadcrumbs("角色管理", this.URLFor("RoleController.Index"))
-	this.ShowHtml(&role.Index{})
+	this.ShowHtml()
 }
 
 //添加角色页面
@@ -59,10 +58,10 @@ func (this *RoleController) Post() {
 
 	}
 
-	this.htmlData["model"] = roleModel
+	this.Data["model"] = roleModel
 	this.AddBreadcrumbs("角色管理", this.URLFor("RoleController.Index"))
 	this.AddBreadcrumbs("新增", this.URLFor("RoleController.Add"))
-	this.ShowHtml(&role.Post{})
+	this.ShowHtml()
 }
 
 //角色修改
@@ -93,11 +92,11 @@ func (this *RoleController) Put() {
 
 	}
 
-	this.htmlData["model"] = roleModel
+	this.Data["model"] = roleModel
 	this.AddBreadcrumbs("角色管理", this.URLFor("RoleController.Index"))
 	this.AddBreadcrumbs("修改", this.URLFor("RoleController.Put", "role_id", role_id))
 	this.AddBreadcrumbs(roleModel.Name, "")
-	this.ShowHtml(&role.Put{})
+	this.ShowHtml()
 }
 
 //角色授权展示页面
@@ -142,13 +141,13 @@ func (this *RoleController) Assignment() {
 		}
 	}
 
-	this.htmlData["model"] = roleModel
-	this.htmlData["unassignmentPermssionNames"] = unassignmentPermssionNames
-	this.htmlData["assignmentPermssionNames"] = assignmentPermssionNames
+	this.Data["model"] = roleModel
+	this.Data["unassignmentPermssionNames"] = unassignmentPermssionNames
+	this.Data["assignmentPermssionNames"] = assignmentPermssionNames
 	this.AddBreadcrumbs("角色管理", this.URLFor("RoleController.Index"))
 	this.AddBreadcrumbs("权限授权", this.URLFor("RoleController.Assignment", "role_id", role_id))
 	this.AddBreadcrumbs(roleModel.Name, "")
-	this.ShowHtml(&role.Assignment{})
+	this.ShowHtml()
 }
 
 //ajax-权限授权给角色

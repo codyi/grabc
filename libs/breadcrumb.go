@@ -4,19 +4,42 @@ type Breadcrumb struct {
 	Label string
 	Url   string
 }
+
 type Breadcrumbs struct {
-	Items []Breadcrumb
+	items []Breadcrumb
 }
 
-//set Breadcrumbs
+//添加Breadcrumb
 func (this *Breadcrumbs) AddBreadcrumbs(label, url string) {
-	if this.Items == nil {
-		this.Items = make([]Breadcrumb, 0)
+	if this.items == nil {
+		this.items = make([]Breadcrumb, 0)
 	}
 
 	breadcrumb := Breadcrumb{}
 	breadcrumb.Label = label
 	breadcrumb.Url = url
 
-	this.Items = append(this.Items, breadcrumb)
+	this.items = append(this.items, breadcrumb)
+}
+
+//获取breadcrumbs的html代码
+func (this *Breadcrumbs) ShowBreadcrumbs() string {
+	var html = "<ul class=\"breadcrumb\">"
+	for _, item := range this.items {
+		html += "<li>"
+
+		if item.Url == "" {
+			html += item.Label
+		} else {
+			html += "<a href='" + item.Url + "'>"
+			html += item.Label
+			html += "</a>"
+		}
+
+		html += "</li>"
+	}
+
+	html += "</ul>"
+
+	return html
 }

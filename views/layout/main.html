@@ -64,25 +64,7 @@
             </aside>
             <div class="content-wrapper">
               <section class="content-header">
-                <ul class="breadcrumb">
-                <li>
-                    <a href='{{.homeUrl}}'>
-                      <span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span>
-                      首页
-                    </a>
-                  </li>
-                  {{range $breadcrumb := .breadcrumbs}}
-                  <li>
-                    {{if eq $breadcrumb.Url ""}}
-                      {{$breadcrumb.Label}}
-                    {{else}}
-                    <a href='{{$breadcrumb.Url}}'>
-                      {{$breadcrumb.Label}}
-                    </a>
-                    {{end}}
-                  </li>
-                  {{end}}
-                </ul>
+                {{.breadcrumbs}}
               </section>
               <section class="content">
                 {{.LayoutContent}}

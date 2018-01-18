@@ -44,16 +44,18 @@ func (this *BaseController) redirect(url string) {
 // Prepare
 func (this *BaseController) Prepare() {
 	this.htmlData = make(map[interface{}]interface{})
+
 	controlerName, actionName := this.GetControllerAndAction()
 	this.controllerName = strings.ToLower(controlerName[0 : len(controlerName)-10])
 	this.actionName = strings.ToLower(actionName)
-	this.funcMap = template.FuncMap{
-		"pagination":     libs.PaginationRender,
-		"unixTimeFormat": libs.UnixTimeFormat,
-	}
 
 	if !libs.CheckAccess(this.controllerName, this.actionName, libs.AccessRoutes()) {
 		this.redirect(libs.Http_403)
+	}
+
+	this.funcMap = template.FuncMap{
+		"pagination":     libs.PaginationRender,
+		"unixTimeFormat": libs.UnixTimeFormat,
 	}
 }
 
@@ -71,9 +73,9 @@ func (this *BaseController) ShowHtml(tpl ...string) {
 	this.htmlData["homeUrl"] = this.homeUrl
 	this.htmlData["viewpaht"] = libs.Template.ViewPath
 	this.htmlData["alert_messages"] = this.Alert
-	this.htmlData["breadcrumbs"] = this.Breadcrumbs.Items
 	this.htmlData["global_css"] = libs.Template.GlobalCss()
 	this.htmlData["global_js"] = libs.Template.GlobalJs()
+	this.htmlData["alert"] = this.ShowAlert()
 
 	if len(libs.Template.Data) > 0 {
 		for k, v := range libs.Template.Data {
@@ -99,6 +101,7 @@ func (this *BaseController) ShowHtml(tpl ...string) {
 		this.StopRun()
 	}
 
+	libs.Template.Data["breadcrumbs"] = this.ShowBreadcrumbs()
 	libs.Template.Data["LayoutContent"] = viewContent.String()
 	libs.Template.Data["grabc_menus"] = libs.AccessMenus()
 	var htmlContent bytes.Buffer

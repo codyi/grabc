@@ -122,6 +122,17 @@ func (this *BaseController) ShowHtml(tpl ...string) {
 	this.Data["alert"] = this.ShowAlert()
 	this.Data["breadcrumbs"] = this.ShowBreadcrumbs()
 	this.Data["menus"] = libs.ShowMenu(this.controllerName, this.actionName)
+
+	if len(libs.Template.Data) > 0 {
+		for name, value := range libs.Template.Data {
+			if _, isExist := this.Data[name]; isExist {
+				panic("设置layout数据失败，因为" + name + "已经存在")
+			}
+
+			this.Data[name] = value
+		}
+	}
+
 	this.Render()
 	this.StopRun()
 }

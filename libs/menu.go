@@ -1,6 +1,7 @@
 package libs
 
 import (
+	"fmt"
 	"github.com/codyi/grabc/models"
 	"strings"
 )
@@ -9,6 +10,7 @@ import (
 type newMenu struct {
 	Url  string
 	Name string
+	Icon string
 }
 
 type MenuGroup struct {
@@ -90,4 +92,45 @@ func AccessMenus() []*MenuGroup {
 	}
 
 	return returnMenus
+}
+
+func ShowMenu(controllName, actionName string) string {
+	html := `<ul class='sidebar-menu tree' data-widget='tree'>`
+	for _, menu := range AccessMenus() {
+
+		if len(menu.Child) > 0 {
+			childHtml := ""
+			isActiveChild := false
+			for _, childMenu := range menu.Child {
+				activeClass := ""
+
+				if strings.ToLower("/"+controllName+"/"+actionName) == strings.ToLower(childMenu.Url) {
+					activeClass = "active"
+					isActiveChild = true
+				}
+
+				childHtml += fmt.Sprintf(`<li class="%s"><a href='%s'>%s%s</a></li>`, activeClass, childMenu.Url, childMenu.Icon, childMenu.Name)
+			}
+
+			s := `<li class='treeview %s'><a href='#'>%s<span>%s</span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a><ul class='treeview-menu'>%s</ul></li>`
+			if isActiveChild {
+				html += fmt.Sprintf(s, "active menu-open", menu.Parent.Icon, menu.Parent.Name, childHtml)
+			} else {
+				html += fmt.Sprintf(s, "", menu.Parent.Icon, menu.Parent.Name, childHtml)
+			}
+		} else {
+			activeClass := ""
+			s := `<li class='treeview %s'><a href='%s'>%s<span>%s</span></a></li>`
+
+			if strings.ToLower("/"+controllName+"/"+actionName) == strings.ToLower(menu.Parent.Url) {
+				activeClass = "active"
+			}
+
+			html += fmt.Sprintf(s, activeClass, menu.Parent.Url, menu.Parent.Icon, menu.Parent.Name)
+		}
+
+	}
+
+	html += `</ul>`
+	return html
 }

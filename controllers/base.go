@@ -56,6 +56,7 @@ func (this *BaseController) Prepare() {
 	this.funcMap = template.FuncMap{
 		"pagination":     libs.PaginationRender,
 		"unixTimeFormat": libs.UnixTimeFormat,
+		"meun":           libs.ShowMenu,
 	}
 }
 
@@ -94,7 +95,7 @@ func (this *BaseController) ShowHtml(tpl ...string) {
 	tmpl.Execute(&viewContent, this.htmlData)
 
 	//渲染layout模板
-	tmpl, err = template.New(filepath.Base(libs.Template.Layout)).ParseFiles(libs.Template.Layout)
+	tmpl, err = template.New(filepath.Base(libs.Template.Layout)).Funcs(this.funcMap).ParseFiles(libs.Template.Layout)
 
 	if err != nil {
 		this.Ctx.WriteString(err.Error())
@@ -103,7 +104,7 @@ func (this *BaseController) ShowHtml(tpl ...string) {
 
 	libs.Template.Data["breadcrumbs"] = this.ShowBreadcrumbs()
 	libs.Template.Data["LayoutContent"] = viewContent.String()
-	libs.Template.Data["grabc_menus"] = libs.AccessMenus()
+	libs.Template.Data["menus"] = libs.ShowMenu(this.controllerName, this.actionName)
 	var htmlContent bytes.Buffer
 	tmpl.Execute(&htmlContent, libs.Template.Data)
 

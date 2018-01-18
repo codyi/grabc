@@ -43,22 +43,7 @@
             <aside class="main-sidebar">
               <!-- sidebar: style can be found in sidebar.less -->
               <section class="sidebar" style="height: auto;">
-                <ul class="sidebar-menu tree" data-widget="tree">
-                  {{range $index,$menu:=.grabc_menus}}
-                    <li>
-                      <a href='{{$menu.Parent.Url}}'><i class="fa fa-book"></i> <span>{{$menu.Parent.Name}}</span></a>
-                      {{range $i,$childMenu:=$menu.Child}}
-                        {{if eq $i 0 }}
-                        <ul class="treeview-menu menu-open" style="display: block;">
-                        {{end}}
-                        <li><a href='{{$childMenu.Url}}'><i class="fa fa-book"></i> <span>{{$childMenu.Name}}</span></a></li>
-                        {{if eq $i 0 }}
-                        </ul>
-                        {{end}}
-                      {{end}}
-                    </li>
-                  {{end}}
-                </ul>
+                {{.menus}}
               </section>
               <!-- /.sidebar -->
             </aside>

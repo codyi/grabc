@@ -1,4 +1,4 @@
-{{.global_css}}
+{{str2html .global_css}}
 <div class="box box-info">
     <div class="box-body">
         <table class="table route_warp">
@@ -25,7 +25,7 @@
         </table>
     </div>
 </div>
-{{.global_js}}
+{{str2html .global_js}}
 <script>
     var add_routes = new Array();    //已添加路由
     var not_add_routes = new Array(); //未添加路由

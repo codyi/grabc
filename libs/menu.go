@@ -151,7 +151,7 @@ SHOW:
 			}
 		} else {
 			activeClass := ""
-			s := `<li class='treeview %s'><a href='%s'><i class="fa %s"></i><span>%s</span></a></li>`
+			s := `<li class='%s'><a href='%s'><i class="fa %s"></i><span>%s</span></a></li>`
 
 			if activeUrl == menu.Parent.Url {
 				activeClass = "active"

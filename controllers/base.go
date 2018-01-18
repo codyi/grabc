@@ -4,13 +4,15 @@ import (
 	"bytes"
 	"github.com/astaxie/beego"
 	"github.com/codyi/grabc/libs"
-	"path/filepath"
+	// "path/filepath"
+	"html/template"
 	"strings"
-	"text/template"
 )
 
 func init() {
 	libs.ExceptMethodAppend("ShowHtml", "ShowJSON")
+	beego.AddFuncMap("unixTimeFormat", libs.UnixTimeFormat)
+	beego.AddFuncMap("pagination", libs.PaginationRender)
 }
 
 type HtmlTemplate interface {
@@ -30,7 +32,6 @@ type BaseController struct {
 	libs.Breadcrumbs
 	controllerName string
 	actionName     string
-	htmlData       map[interface{}]interface{}
 	funcMap        template.FuncMap
 	homeUrl        string
 }
@@ -43,8 +44,6 @@ func (this *BaseController) redirect(url string) {
 
 // Prepare
 func (this *BaseController) Prepare() {
-	this.htmlData = make(map[interface{}]interface{})
-
 	controlerName, actionName := this.GetControllerAndAction()
 	this.controllerName = strings.ToLower(controlerName[0 : len(controlerName)-10])
 	this.actionName = strings.ToLower(actionName)
@@ -52,63 +51,78 @@ func (this *BaseController) Prepare() {
 	if !libs.CheckAccess(this.controllerName, this.actionName, libs.AccessRoutes()) {
 		this.redirect(libs.Http_403)
 	}
-
-	this.funcMap = template.FuncMap{
-		"pagination":     libs.PaginationRender,
-		"unixTimeFormat": libs.UnixTimeFormat,
-		"meun":           libs.ShowMenu,
-	}
 }
 
-//显示页面
-func (this *BaseController) ShowHtml(tpl ...string) {
-	var tplName string
+// RenderBytes returns the bytes of rendered template string. Do not send out response.
+func (c *BaseController) RenderBytes() ([]byte, error) {
+	buf, err := c.renderTemplate()
+	//if the controller has set layout, then first get the tplName's content set the content to the layout
+	if err == nil && libs.Template.LayoutName != "" {
+		c.Data["LayoutContent"] = template.HTML(buf.String())
 
-	if len(tpl) > 0 {
-		tplName = libs.Template.ViewPath + tpl[0]
-	} else {
-		tplName = libs.Template.ViewPath + this.controllerName + "/" + this.actionName + ".html"
-	}
-
-	var viewContent bytes.Buffer
-	this.htmlData["homeUrl"] = this.homeUrl
-	this.htmlData["viewpaht"] = libs.Template.ViewPath
-	this.htmlData["alert_messages"] = this.Alert
-	this.htmlData["global_css"] = libs.Template.GlobalCss()
-	this.htmlData["global_js"] = libs.Template.GlobalJs()
-	this.htmlData["alert"] = this.ShowAlert()
-
-	if len(libs.Template.Data) > 0 {
-		for k, v := range libs.Template.Data {
-			this.htmlData[k] = v
+		if c.LayoutSections != nil {
+			for sectionName, sectionTpl := range c.LayoutSections {
+				if sectionTpl == "" {
+					c.Data[sectionName] = ""
+					continue
+				}
+				buf.Reset()
+				err = beego.ExecuteViewPathTemplate(&buf, sectionTpl, libs.Template.LayoutPath, c.Data)
+				if err != nil {
+					return nil, err
+				}
+				c.Data[sectionName] = template.HTML(buf.String())
+			}
 		}
+
+		buf.Reset()
+		beego.ExecuteViewPathTemplate(&buf, libs.Template.LayoutName, libs.Template.LayoutPath, c.Data)
 	}
+	return buf.Bytes(), err
+}
 
-	//渲染视图模板
-	tmpl, err := template.New(filepath.Base(tplName)).Funcs(this.funcMap).ParseFiles(tplName)
-
+// Render sends the response with rendered template bytes as text/html type.
+func (c *BaseController) Render() error {
+	rb, err := c.RenderBytes()
 	if err != nil {
-		this.Ctx.WriteString(err.Error())
-		this.StopRun()
+		return err
 	}
 
-	tmpl.Execute(&viewContent, this.htmlData)
-
-	//渲染layout模板
-	tmpl, err = template.New(filepath.Base(libs.Template.Layout)).Funcs(this.funcMap).ParseFiles(libs.Template.Layout)
-
-	if err != nil {
-		this.Ctx.WriteString(err.Error())
-		this.StopRun()
+	if c.Ctx.ResponseWriter.Header().Get("Content-Type") == "" {
+		c.Ctx.Output.Header("Content-Type", "text/html; charset=utf-8")
 	}
 
-	libs.Template.Data["breadcrumbs"] = this.ShowBreadcrumbs()
-	libs.Template.Data["LayoutContent"] = viewContent.String()
-	libs.Template.Data["menus"] = libs.ShowMenu(this.controllerName, this.actionName)
-	var htmlContent bytes.Buffer
-	tmpl.Execute(&htmlContent, libs.Template.Data)
+	return c.Ctx.Output.Body(rb)
+}
 
-	this.Ctx.WriteString(htmlContent.String())
+func (c *BaseController) renderTemplate() (bytes.Buffer, error) {
+	var buf bytes.Buffer
+	if c.TplName == "" {
+		c.TplName = strings.ToLower(c.controllerName) + "/" + strings.ToLower(c.actionName) + "." + c.TplExt
+	}
+	if c.TplPrefix != "" {
+		c.TplName = c.TplPrefix + c.TplName
+	}
+	return buf, beego.ExecuteViewPathTemplate(&buf, c.TplName, libs.Template.ViewPath, c.Data)
+}
+
+//重新定义beego的render
+func (this *BaseController) ShowHtml(tpl ...string) {
+	if len(tpl) > 0 {
+		this.TplName = tpl[0]
+	} else {
+		this.TplName = this.controllerName + "/" + this.actionName + ".html"
+	}
+
+	this.Data["homeUrl"] = this.homeUrl
+	this.Data["viewpaht"] = libs.Template.ViewPath
+	this.Data["alert_messages"] = this.Alert
+	this.Data["global_css"] = libs.Template.GlobalCss()
+	this.Data["global_js"] = libs.Template.GlobalJs()
+	this.Data["alert"] = this.ShowAlert()
+	this.Data["breadcrumbs"] = this.ShowBreadcrumbs()
+	this.Data["menus"] = libs.ShowMenu(this.controllerName, this.actionName)
+	this.Render()
 	this.StopRun()
 }
 

@@ -1,4 +1,4 @@
-{{.global_css}}
+{{str2html .global_css}}
 <div class="box box-info">
     <div class="box-body">
         <table class="table route_warp">
@@ -26,7 +26,7 @@
         <input type="hidden" name="role_id" id="role_id" value="{{.model.Id}}">
     </div>
 </div>
-{{.global_js}}
+{{str2html .global_js}}
 <script>
     var unassignment_permissions = new Array();
     var assignment_permissions = new Array();

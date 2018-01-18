@@ -33,8 +33,8 @@ func (this *MenuController) Index() {
 	}
 
 	pagination.PageTotal = pageTotal
-	this.htmlData["menulist"] = menus
-	this.htmlData["pages"] = pagination
+	this.Data["menulist"] = menus
+	this.Data["pages"] = pagination
 	this.AddBreadcrumbs("菜单管理", this.URLFor("MenuController.Index"))
 	this.ShowHtml()
 }
@@ -98,9 +98,9 @@ func (this *MenuController) Post() {
 			selectParents[p.Id] = p.Name
 		}
 	}
-	this.htmlData["model"] = menuModel
-	this.htmlData["routes"] = selectRoutes
-	this.htmlData["parents"] = selectParents
+	this.Data["model"] = menuModel
+	this.Data["routes"] = selectRoutes
+	this.Data["parents"] = selectParents
 	this.AddBreadcrumbs("菜单管理", this.URLFor("MenuController.Index"))
 	this.AddBreadcrumbs("新增", this.URLFor("MenuController.Add"))
 	this.ShowHtml()
@@ -175,9 +175,9 @@ func (this *MenuController) Put() {
 			selectParents[p.Id] = p.Name
 		}
 	}
-	this.htmlData["model"] = menuModel
-	this.htmlData["routes"] = selectRoutes
-	this.htmlData["parents"] = selectParents
+	this.Data["model"] = menuModel
+	this.Data["routes"] = selectRoutes
+	this.Data["parents"] = selectParents
 	this.AddBreadcrumbs("菜单管理", this.URLFor("MenuController.Index"))
 	this.AddBreadcrumbs("修改", this.URLFor("MenuController.Put", "menu_id", menu_id))
 	this.ShowHtml()

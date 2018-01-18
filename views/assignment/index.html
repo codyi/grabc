@@ -1,4 +1,4 @@
-{{.global_css}}
+{{str2html .global_css}}
 <div class="box box-info">
     <div class="box-body">
         <table class="table table-bordered table-striped">
@@ -29,7 +29,8 @@
                 {{end}}
             </tbody>
         </table>
-        {{pagination .pages}}
+        {{$page:=pagination .pages}}
+        {{str2html $page}}
     </div>
 </div>
-{{.global_js}}
+{{str2html .global_js}}

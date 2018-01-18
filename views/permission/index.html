@@ -1,4 +1,4 @@
-{{.global_css}}
+{{str2html .global_css}}
 <div class="box box-primary">
     <div class="box-body">
         <a class="btn btn-primary" href="/permission/add" role="button">新增权限</a>
@@ -38,7 +38,8 @@
                 {{end}}
             </tbody>
         </table>
-        {{pagination .pages}}
+        {{$page:=pagination .pages}}
+        {{str2html $page}}
     </div>
 </div>
-{{.global_js}}
+{{str2html .global_js}}

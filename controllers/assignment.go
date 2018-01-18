@@ -63,8 +63,8 @@ func (this *AssignmentController) Index() {
 	}
 
 	pagination.PageTotal = pageTotal
-	this.htmlData["userItems"] = userItems
-	this.htmlData["pages"] = pagination
+	this.Data["userItems"] = userItems
+	this.Data["pages"] = pagination
 	this.AddBreadcrumbs("授权管理", this.URLFor("AssignmentController.Index"))
 	this.ShowHtml()
 }
@@ -110,10 +110,10 @@ func (this *AssignmentController) User() {
 		}
 	}
 
-	this.htmlData["name"] = user_name
-	this.htmlData["user_id"] = user_id
-	this.htmlData["assignmentRoles"] = assignmentRoles
-	this.htmlData["unassignmentRoles"] = unassignmentRoles
+	this.Data["name"] = user_name
+	this.Data["user_id"] = user_id
+	this.Data["assignmentRoles"] = assignmentRoles
+	this.Data["unassignmentRoles"] = unassignmentRoles
 	this.AddBreadcrumbs("用户授权", this.URLFor("AssignmentController.Index"))
 	this.ShowHtml()
 }

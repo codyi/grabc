@@ -1,32 +1,19 @@
 package libs
 
-import (
-	"os"
-	"path/filepath"
-)
-
 //存储用户自定义的layout内容
 var Template GrabcTemplate
 
 func init() {
 	Template = GrabcTemplate{}
-
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	Template.ViewPath = filepath.Dir(dir) + "/github.com/codyi/grabc/views/"
-	Template.Layout = filepath.Dir(dir) + "/github.com/codyi/grabc/views/layout/main.html"
 	Template.Data = make(map[string]interface{}, 0)
 
 }
 
 type GrabcTemplate struct {
-	Layout   string
-	ViewPath string
-	Data     map[string]interface{}
+	LayoutName string
+	LayoutPath string
+	ViewPath   string
+	Data       map[string]interface{}
 }
 
 func (this *GrabcTemplate) GlobalCss() string {

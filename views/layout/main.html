@@ -43,13 +43,13 @@
             <aside class="main-sidebar">
               <!-- sidebar: style can be found in sidebar.less -->
               <section class="sidebar" style="height: auto;">
-                {{.menus}}
+                {{str2html .menus}}
               </section>
               <!-- /.sidebar -->
             </aside>
             <div class="content-wrapper">
               <section class="content-header">
-                {{.breadcrumbs}}
+                {{str2html .breadcrumbs}}
               </section>
               <section class="content">
                 {{.LayoutContent}}

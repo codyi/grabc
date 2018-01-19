@@ -1,0 +1,8 @@
+
+<div class="alert alert-{{.message_type}}">
+    {{.message}}
+    <script>setTimeout("window.location.href ='{{.redirect_url}}';", 3000);</script>
+</div>
+<p class="text-center" style="margin-top: 40px">
+    <a href="{{.redirect_url}}">如果三秒后没有跳转，请点击此处跳转.</a>
+</p>

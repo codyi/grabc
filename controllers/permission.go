@@ -4,7 +4,6 @@ import (
 	"github.com/astaxie/beego/utils"
 	"github.com/codyi/grabc/libs"
 	"github.com/codyi/grabc/models"
-	"strconv"
 	"strings"
 )
 
@@ -14,14 +13,14 @@ type PermissionController struct {
 
 //permision index page
 func (this *PermissionController) Index() {
-	page_index := strings.TrimSpace(this.GetString("page_index"))
+	page_index, err := this.GetInt("page_index")
 
 	pagination := libs.Pagination{}
 	pagination.PageCount = 20
 	pagination.Url = this.URLFor("PermissionController.Index")
 
-	if s, err := strconv.Atoi(page_index); err == nil {
-		pagination.PageIndex = s
+	if err == nil {
+		pagination.PageIndex = page_index
 	} else {
 		pagination.PageIndex = 1
 	}
@@ -44,16 +43,13 @@ func (this *PermissionController) Add() {
 	permissionModel := models.Permission{}
 
 	if this.isPost() {
-		permission_name := strings.TrimSpace(this.GetString("permission_name"))
-		permission_desc := strings.TrimSpace(this.GetString("permission_desc"))
-
-		permissionModel.Name = permission_name
-		permissionModel.Description = permission_desc
+		permissionModel.Name = strings.TrimSpace(this.GetString("permission_name"))
+		permissionModel.Description = strings.TrimSpace(this.GetString("permission_desc"))
 
 		if isInsert, _ := permissionModel.Insert(); isInsert {
-			this.AddSuccessMessage("添加成功")
+			this.redirectMessage(this.URLFor("PermissionController.Index"), "添加成功", MESSAGE_TYPE_SUCCESS)
 		} else {
-			this.AddErrorMessage("添加失败")
+			this.redirectMessage(this.URLFor("PermissionController.Add"), "添加失败", MESSAGE_TYPE_ERROR)
 		}
 
 	}
@@ -67,34 +63,27 @@ func (this *PermissionController) Add() {
 //permision update page
 func (this *PermissionController) Put() {
 	permissionModel := models.Permission{}
-	permission_id := strings.TrimSpace(this.GetString("permission_id"))
-
-	if id, err := strconv.Atoi(permission_id); err == nil {
-		if err := permissionModel.FindById(id); err != nil {
-			this.AddErrorMessage("数据获取失败")
-		}
-	} else {
-		this.AddErrorMessage("数据不存在")
+	if permission_id, err := this.GetInt("permission_id"); err != nil {
+		this.redirectMessage(this.URLFor("PermissionController.Index"), "数据不存在", MESSAGE_TYPE_ERROR)
+	} else if err := permissionModel.FindById(permission_id); err != nil || permissionModel.IsNewRecord() {
+		this.redirectMessage(this.URLFor("PermissionController.Index"), "数据获取失败", MESSAGE_TYPE_ERROR)
 	}
 
-	if this.isPost() && !permissionModel.IsNewRecord() {
-		permission_name := strings.TrimSpace(this.GetString("permission_name"))
-		permission_desc := strings.TrimSpace(this.GetString("permission_desc"))
-
-		permissionModel.Name = permission_name
-		permissionModel.Description = permission_desc
+	if this.isPost() {
+		permissionModel.Name = strings.TrimSpace(this.GetString("permission_name"))
+		permissionModel.Description = strings.TrimSpace(this.GetString("permission_desc"))
 
 		if err := permissionModel.Update(); err == nil {
-			this.AddSuccessMessage("修改成功")
+			this.redirectMessage(this.URLFor("PermissionController.Index"), "修改成功", MESSAGE_TYPE_SUCCESS)
 		} else {
-			this.AddErrorMessage("修改失败")
+			this.redirectMessage(this.URLFor("PermissionController.Put", "permission_id", this.GetString("permission_id")), "修改失败", MESSAGE_TYPE_ERROR)
 		}
 
 	}
 
 	this.Data["model"] = permissionModel
 	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
-	this.AddBreadcrumbs("修改", this.URLFor("PermissionController.Put", "permission_id", permission_id))
+	this.AddBreadcrumbs("修改", this.URLFor("PermissionController.Put", "permission_id", this.GetString("permission_id")))
 	this.AddBreadcrumbs(permissionModel.Name, "")
 	this.ShowHtml()
 }
@@ -102,19 +91,13 @@ func (this *PermissionController) Put() {
 //permision view page
 func (this *PermissionController) Assignment() {
 	permissionModel := models.Permission{}
-	permission_id := strings.TrimSpace(this.GetString("permission_id"))
 
-	if id, err := strconv.Atoi(permission_id); err == nil {
-		if err := permissionModel.FindById(id); err != nil {
-			this.AddErrorMessage("数据获取失败")
+	if id, err := this.GetInt("permission_id"); err == nil {
+		if err := permissionModel.FindById(id); err != nil || permissionModel.IsNewRecord() {
+			this.redirectMessage(this.URLFor("PermissionController.Index"), "数据获取失败", MESSAGE_TYPE_ERROR)
 		}
 	} else {
-		this.AddErrorMessage("数据不存在")
-	}
-
-	if permissionModel.IsNewRecord() {
-		this.AddErrorMessage("数据不存在")
-
+		this.redirectMessage(this.URLFor("PermissionController.Index"), "数据不存在", MESSAGE_TYPE_ERROR)
 	}
 
 	//获取已经授权的路由
@@ -159,7 +142,7 @@ func (this *PermissionController) Assignment() {
 	this.Data["allRoutes"] = allRoutes
 	this.Data["assignmentRoutes"] = assignmentRoutes
 	this.AddBreadcrumbs("权限管理", this.URLFor("PermissionController.Index"))
-	this.AddBreadcrumbs("授权", this.URLFor("PermissionController.Assignment", "permission_id", permission_id))
+	this.AddBreadcrumbs("授权", this.URLFor("PermissionController.Assignment", "permission_id", this.GetString("permission_id")))
 	this.AddBreadcrumbs(permissionModel.Name, "")
 	this.ShowHtml()
 }
@@ -170,7 +153,6 @@ func (this *PermissionController) AjaxAddRoute() {
 
 	if this.isPost() {
 		route := strings.TrimSpace(this.GetString("route"))
-		permissionId := strings.TrimSpace(this.GetString("permissionId"))
 
 		routeModel := models.Route{}
 		routeAssignmentModel := models.AssignmentRoute{}
@@ -191,7 +173,7 @@ func (this *PermissionController) AjaxAddRoute() {
 			this.ShowJSON(&data)
 		}
 
-		if i, err := strconv.Atoi(permissionId); err == nil {
+		if i, err := this.GetInt("permissionId"); err == nil {
 			routeAssignmentModel.PermissionId = i
 		} else {
 			data.Code = 400
@@ -223,10 +205,9 @@ func (this *PermissionController) AjaxRemoveRoute() {
 
 	if this.isPost() {
 		param_route := strings.TrimSpace(this.GetString("route"))
-		param_permision_id := strings.TrimSpace(this.GetString("permissionId"))
 		routeAssignmentModel := models.AssignmentRoute{}
 
-		var int_param_route_id, int_param_permission_id int
+		var int_param_route_id int
 		routeModel := models.Route{}
 
 		if param_route != "" {
@@ -245,12 +226,12 @@ func (this *PermissionController) AjaxRemoveRoute() {
 			this.ShowJSON(&data)
 		}
 
-		if id, err := strconv.Atoi(param_permision_id); err != nil {
+		int_param_permission_id, err := this.GetInt("permissionId")
+
+		if err != nil {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-		} else {
-			int_param_permission_id = id
 		}
 
 		if is_delete, err := routeAssignmentModel.Delete(int_param_route_id, int_param_permission_id); is_delete {
@@ -275,7 +256,7 @@ func (this *PermissionController) AjaxRemoveRoute() {
 func (this *PermissionController) Delete() {
 	data := JsonData{}
 	if this.isPost() {
-		permision_id, err := strconv.Atoi(strings.TrimSpace(this.GetString("permission_id")))
+		permision_id, err := this.GetInt("permission_id")
 
 		if err != nil {
 			data.Code = 400

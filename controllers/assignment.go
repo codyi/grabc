@@ -4,7 +4,6 @@ import (
 	"github.com/astaxie/beego/utils"
 	"github.com/codyi/grabc/libs"
 	"github.com/codyi/grabc/models"
-	"strconv"
 	"strings"
 )
 
@@ -14,15 +13,15 @@ type AssignmentController struct {
 
 //用户授权列表
 func (this *AssignmentController) Index() {
-	page_index := strings.TrimSpace(this.GetString("page_index"))
+	page_index, err := this.GetInt("page_index")
 
 	//分页设置
 	pagination := libs.Pagination{}
 	pagination.PageCount = 20
 	pagination.Url = this.URLFor("AssignmentController.Index")
 
-	if s, err := strconv.Atoi(page_index); err == nil {
-		pagination.PageIndex = s
+	if err == nil {
+		pagination.PageIndex = page_index
 	} else {
 		pagination.PageIndex = 1
 	}
@@ -71,18 +70,16 @@ func (this *AssignmentController) Index() {
 
 //用户授权
 func (this *AssignmentController) User() {
-	param_user_id := strings.TrimSpace(this.GetString("user_id"))
-	var user_id int
-	if s, err := strconv.Atoi(param_user_id); err == nil {
-		user_id = s
-	} else {
-		this.AddErrorMessage("用户ID不存在")
+	user_id, err := this.GetInt("user_id")
+
+	if err != nil {
+		this.redirectMessage(this.URLFor("AssignmentController.Index"), "用户ID不正确", MESSAGE_TYPE_ERROR)
 	}
 
 	user_name := (*models.UserModel).FindNameById(user_id)
 
 	if user_name == "" {
-		this.AddErrorMessage("用户没有找到")
+		this.redirectMessage(this.URLFor("AssignmentController.Index"), "用户没有找到", MESSAGE_TYPE_ERROR)
 	}
 
 	//获取全部的权限
@@ -123,9 +120,8 @@ func (this *AssignmentController) AjaxAdd() {
 
 	if this.isPost() {
 		param_role := strings.TrimSpace(this.GetString("role"))
-		param_user_id := strings.TrimSpace(this.GetString("user_id"))
+		int_param_user_id, user_id_err := this.GetInt("user_id")
 
-		var int_param_user_id int
 		roleModel := models.Role{}
 
 		if param_role != "" {
@@ -142,12 +138,10 @@ func (this *AssignmentController) AjaxAdd() {
 			this.ShowJSON(&data)
 		}
 
-		if id, err := strconv.Atoi(param_user_id); err != nil {
+		if user_id_err != nil {
 			data.Code = 400
-			data.Message = err.Error()
+			data.Message = user_id_err.Error()
 			this.ShowJSON(&data)
-		} else {
-			int_param_user_id = id
 		}
 
 		roleAssignmentModel := models.AssignmentRole{}
@@ -174,9 +168,8 @@ func (this *AssignmentController) AjaxRemove() {
 
 	if this.isPost() {
 		param_role := strings.TrimSpace(this.GetString("role"))
-		param_user_id := strings.TrimSpace(this.GetString("user_id"))
+		int_param_user_id, user_id_err := this.GetInt("user_id")
 
-		var int_param_user_id int
 		roleModel := models.Role{}
 
 		if param_role != "" {
@@ -193,13 +186,10 @@ func (this *AssignmentController) AjaxRemove() {
 			this.ShowJSON(&data)
 		}
 
-		if id, err := strconv.Atoi(param_user_id); err != nil {
+		if user_id_err != nil {
 			data.Code = 400
-			data.Message = err.Error()
+			data.Message = user_id_err.Error()
 			this.ShowJSON(&data)
-			return
-		} else {
-			int_param_user_id = id
 		}
 
 		roleAssignmentModel := models.AssignmentRole{}

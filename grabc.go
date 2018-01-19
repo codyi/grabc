@@ -11,19 +11,18 @@ import (
 
 //init function
 func init() {
-	//注册rabc访问地址
-	beego.AutoRouter(&controllers.RouteController{})
-	beego.AutoRouter(&controllers.RoleController{})
-	beego.AutoRouter(&controllers.PermissionController{})
-	beego.AutoRouter(&controllers.AssignmentController{})
-	beego.AutoRouter(&controllers.MenuController{})
-	libs.IgnoreRoutes = make(map[string][]string, 0)
-	RegisterController(&controllers.RouteController{}, &controllers.RoleController{}, &controllers.PermissionController{}, &controllers.AssignmentController{}, &controllers.MenuController{})
+	var c []beego.ControllerInterface
+	c = append(c, &controllers.RouteController{}, &controllers.RoleController{}, &controllers.PermissionController{}, &controllers.AssignmentController{}, &controllers.MenuController{})
 
-	//设置grabc页面路径
-	//如果使用默认的，不要设置或者置空
+	for _, v := range c {
+		//将路由注册到beego
+		beego.AutoRouter(v)
+		//将路由注册到grabc
+		RegisterController(v)
+	}
+
+	//设置grabc默认视图、layout路径
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-
 	if err != nil {
 		panic(err.Error())
 	}
@@ -50,12 +49,12 @@ func RegisterUserModel(m models.IUserModel) {
 }
 
 //增加忽律检查的地址，例如site/login,这个就不需要检查权限
-func AppendIgnoreRoute(c, r string) {
-	if libs.IgnoreRoutes[c] == nil {
-		libs.IgnoreRoutes[c] = make([]string, 0)
+func AppendIgnoreRoute(controllerName, actionName string) {
+	if libs.IgnoreRoutes[controllerName] == nil {
+		libs.IgnoreRoutes[controllerName] = make([]string, 0)
 	}
 
-	libs.IgnoreRoutes[c] = append(libs.IgnoreRoutes[c], r)
+	libs.IgnoreRoutes[controllerName] = append(libs.IgnoreRoutes[controllerName], actionName)
 }
 
 //权限检查
@@ -69,9 +68,9 @@ func Http_403(url string) {
 }
 
 //设置grabc的模板
-func SetLayout(name string, path string) {
-	libs.Template.LayoutName = name
-	libs.Template.LayoutPath = path
+func SetLayout(layoutName string, layoutPath string) {
+	libs.Template.LayoutName = layoutName
+	libs.Template.LayoutPath = layoutPath
 	beego.AddViewPath(libs.Template.LayoutPath)
 }
 
@@ -85,7 +84,7 @@ func AccessMenus() []*libs.MenuGroup {
 	return libs.AccessMenus()
 }
 
-//设置模板的路径
+//设置grabc模板的路径
 func SetViewPath(path string) {
 	libs.Template.ViewPath = path
 	beego.AddViewPath(libs.Template.ViewPath)

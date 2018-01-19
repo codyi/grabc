@@ -35,8 +35,7 @@ func init() {
 	grabc.RegisterUserModel(&models.User{})
 	//增加忽律权限检查的页面
 	grabc.AppendIgnoreRoute("site", "login")
-	//设置权限不足的提示页面路径
-	grabc.Http_403("/site/nopermission")
+
 	//设置grabc页面视图路径
 	//如果使用默认的，不要设置或置空
 	//如果需要对grabc插件进行二次开发，则需要设置这个目录，否则不需要管

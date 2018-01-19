@@ -62,11 +62,6 @@ func CheckAccess(controllerName, routeName string) bool {
 	return libs.CheckAccess(controllerName, routeName, libs.AccessRoutes())
 }
 
-//没有权限跳转的页面
-func Http_403(url string) {
-	libs.Http_403 = url
-}
-
 //设置grabc的模板
 func SetLayout(layoutName string, layoutPath string) {
 	libs.Template.LayoutName = layoutName

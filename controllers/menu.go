@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/codyi/grabc/libs"
 	"github.com/codyi/grabc/models"
-	"strconv"
 	"strings"
 )
 
@@ -13,15 +12,15 @@ type MenuController struct {
 
 //菜单管理首页
 func (this *MenuController) Index() {
-	page_index := strings.TrimSpace(this.GetString("page_index"))
+	page_index, err := this.GetInt("page_index")
 
 	//分页设置
 	pagination := libs.Pagination{}
 	pagination.PageCount = 20
 	pagination.Url = this.URLFor("MenuController.Index")
 
-	if s, err := strconv.Atoi(page_index); err == nil {
-		pagination.PageIndex = s
+	if err == nil {
+		pagination.PageIndex = page_index
 	} else {
 		pagination.PageIndex = 1
 	}
@@ -45,23 +44,17 @@ func (this *MenuController) Post() {
 
 	if this.isPost() {
 		menu_name := strings.TrimSpace(this.GetString("menu_name"))
-		menu_order := strings.TrimSpace(this.GetString("menu_order"))
+		int_menu_order, menu_order_err := this.GetInt("menu_order")
 		menu_route := strings.TrimSpace(this.GetString("menu_route"))
-		menu_parent := strings.TrimSpace(this.GetString("menu_parent"))
+		int_menu_parent, menu_parent_err := this.GetInt("menu_parent")
 		menu_icon := strings.TrimSpace(this.GetString("menu_icon"))
 
-		var int_menu_order, int_menu_parent int
-
-		if i, err := strconv.Atoi(menu_order); err != nil {
-			this.AddErrorMessage("排序必须是数字")
-		} else {
-			int_menu_order = i
+		if menu_order_err != nil {
+			this.redirectMessage(this.URLFor("MenuController.Post"), "排序必须是数字", MESSAGE_TYPE_ERROR)
 		}
 
-		if i, err := strconv.Atoi(menu_parent); err != nil {
-			this.AddErrorMessage("父级分类必须是数字")
-		} else {
-			int_menu_parent = i
+		if menu_parent_err != nil {
+			this.redirectMessage(this.URLFor("MenuController.Post"), "父级分类必须是数字", MESSAGE_TYPE_ERROR)
 		}
 
 		menuModel.Name = menu_name
@@ -71,11 +64,10 @@ func (this *MenuController) Post() {
 		menuModel.Icon = menu_icon
 
 		if isInsert, _ := menuModel.Insert(); isInsert {
-			this.AddSuccessMessage("添加成功")
+			this.redirectMessage(this.URLFor("MenuController.Index"), "添加成功", MESSAGE_TYPE_SUCCESS)
 		} else {
-			this.AddErrorMessage("添加失败")
+			this.redirectMessage(this.URLFor("MenuController.Post"), "添加失败", MESSAGE_TYPE_ERROR)
 		}
-
 	}
 
 	routeModel := models.Route{}
@@ -108,37 +100,30 @@ func (this *MenuController) Post() {
 
 //修改菜单页面
 func (this *MenuController) Put() {
-	menuModel := models.Menu{}
+	menu_id, err := this.GetInt("menu_id")
 
-	menu_id := strings.TrimSpace(this.GetString("menu_id"))
-
-	if id, err := strconv.Atoi(menu_id); err == nil {
-		if err := menuModel.FindById(id); err != nil {
-			this.AddErrorMessage("数据获取失败")
-		}
-	} else {
-		this.AddErrorMessage("数据不存在")
+	if err != nil {
+		this.redirectMessage(this.URLFor("MenuController.Index"), "数据不存在", MESSAGE_TYPE_ERROR)
 	}
 
-	if this.isPost() && !menuModel.IsNewRecord() {
+	menuModel := models.Menu{}
+	if err = menuModel.FindById(menu_id); err != nil {
+		this.redirectMessage(this.URLFor("MenuController.Index"), "数据获取失败", MESSAGE_TYPE_ERROR)
+	}
+
+	if this.isPost() {
 		menu_name := strings.TrimSpace(this.GetString("menu_name"))
-		menu_order := strings.TrimSpace(this.GetString("menu_order"))
+		int_menu_order, menu_order_err := this.GetInt("menu_order")
 		menu_route := strings.TrimSpace(this.GetString("menu_route"))
-		menu_parent := strings.TrimSpace(this.GetString("menu_parent"))
+		int_menu_parent, menu_parent_err := this.GetInt("menu_parent")
 		menu_icon := strings.TrimSpace(this.GetString("menu_icon"))
 
-		var int_menu_order, int_menu_parent int
-
-		if i, err := strconv.Atoi(menu_order); err != nil {
-			this.AddErrorMessage("排序必须是数字")
-		} else {
-			int_menu_order = i
+		if menu_order_err != nil {
+			this.redirectMessage(this.URLFor("MenuController.Put", "menu_id", this.GetString("menu_id")), "排序必须是数字", MESSAGE_TYPE_ERROR)
 		}
 
-		if i, err := strconv.Atoi(menu_parent); err != nil {
-			this.AddErrorMessage("父级分类必须是数字")
-		} else {
-			int_menu_parent = i
+		if menu_parent_err != nil {
+			this.redirectMessage(this.URLFor("MenuController.Put", "menu_id", this.GetString("menu_id")), "父级分类必须是数字", MESSAGE_TYPE_ERROR)
 		}
 
 		menuModel.Name = menu_name
@@ -148,9 +133,9 @@ func (this *MenuController) Put() {
 		menuModel.Icon = menu_icon
 
 		if err := menuModel.Update(); err == nil {
-			this.AddSuccessMessage("修改成功")
+			this.redirectMessage(this.URLFor("MenuController.Index"), "修改成功", MESSAGE_TYPE_SUCCESS)
 		} else {
-			this.AddErrorMessage("修改失败")
+			this.redirectMessage(this.URLFor("MenuController.Put", "menu_id", this.GetString("menu_id")), "修改失败", MESSAGE_TYPE_ERROR)
 		}
 
 	}
@@ -179,7 +164,7 @@ func (this *MenuController) Put() {
 	this.Data["routes"] = selectRoutes
 	this.Data["parents"] = selectParents
 	this.AddBreadcrumbs("菜单管理", this.URLFor("MenuController.Index"))
-	this.AddBreadcrumbs("修改", this.URLFor("MenuController.Put", "menu_id", menu_id))
+	this.AddBreadcrumbs("修改", this.URLFor("MenuController.Put", "menu_id", this.GetString("menu_id")))
 	this.ShowHtml()
 }
 
@@ -187,7 +172,7 @@ func (this *MenuController) Put() {
 func (this *MenuController) Delete() {
 	data := JsonData{}
 	if this.isPost() {
-		menu_id, err := strconv.Atoi(strings.TrimSpace(this.GetString("menu_id")))
+		menu_id, err := this.GetInt("menu_id")
 
 		if err != nil {
 			data.Code = 400

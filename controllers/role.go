@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/codyi/grabc/libs"
 	"github.com/codyi/grabc/models"
-	"strconv"
 	"strings"
 )
 
@@ -13,15 +12,15 @@ type RoleController struct {
 
 //角色管理首页
 func (this *RoleController) Index() {
-	page_index := strings.TrimSpace(this.GetString("page_index"))
+	page_index, err := this.GetInt("page_index")
 
 	//分页设置
 	pagination := libs.Pagination{}
 	pagination.PageCount = 20
 	pagination.Url = this.URLFor("RoleController.Index")
 
-	if s, err := strconv.Atoi(page_index); err == nil {
-		pagination.PageIndex = s
+	if err == nil {
+		pagination.PageIndex = page_index
 	} else {
 		pagination.PageIndex = 1
 	}
@@ -44,16 +43,13 @@ func (this *RoleController) Post() {
 	roleModel := models.Role{}
 
 	if this.isPost() {
-		role_name := strings.TrimSpace(this.GetString("role_name"))
-		role_desc := strings.TrimSpace(this.GetString("role_desc"))
-
-		roleModel.Name = role_name
-		roleModel.Description = role_desc
+		roleModel.Name = strings.TrimSpace(this.GetString("role_name"))
+		roleModel.Description = strings.TrimSpace(this.GetString("role_desc"))
 
 		if isInsert, _ := roleModel.Insert(); isInsert {
-			this.AddSuccessMessage("添加成功")
+			this.redirectMessage(this.URLFor("RoleController.Index"), "添加成功", MESSAGE_TYPE_SUCCESS)
 		} else {
-			this.AddErrorMessage("添加失败")
+			this.redirectMessage(this.URLFor("RoleController.Index"), "添加失败", MESSAGE_TYPE_ERROR)
 		}
 
 	}
@@ -67,34 +63,30 @@ func (this *RoleController) Post() {
 //角色修改
 func (this *RoleController) Put() {
 	roleModel := models.Role{}
-	role_id := strings.TrimSpace(this.GetString("role_id"))
 
-	if id, err := strconv.Atoi(role_id); err == nil {
-		if err := roleModel.FindById(id); err != nil {
-			this.AddErrorMessage("数据获取失败")
+	if id, err := this.GetInt("role_id"); err == nil {
+		if err := roleModel.FindById(id); err != nil || roleModel.IsNewRecord() {
+			this.redirectMessage(this.URLFor("RoleController.Index"), "数据获取失败", MESSAGE_TYPE_ERROR)
 		}
 	} else {
-		this.AddErrorMessage("数据不存在")
+		this.redirectMessage(this.URLFor("RoleController.Index"), "数据不存在", MESSAGE_TYPE_ERROR)
 	}
 
-	if this.isPost() && !roleModel.IsNewRecord() {
-		role_name := strings.TrimSpace(this.GetString("role_name"))
-		role_desc := strings.TrimSpace(this.GetString("role_desc"))
-
-		roleModel.Name = role_name
-		roleModel.Description = role_desc
+	if this.isPost() {
+		roleModel.Name = strings.TrimSpace(this.GetString("role_name"))
+		roleModel.Description = strings.TrimSpace(this.GetString("role_desc"))
 
 		if err := roleModel.Update(); err == nil {
-			this.AddSuccessMessage("修改成功")
+			this.redirectMessage(this.URLFor("RoleController.Index"), "修改成功", MESSAGE_TYPE_SUCCESS)
 		} else {
-			this.AddErrorMessage("修改失败")
+			this.redirectMessage(this.URLFor("RoleController.Put", "role_id", this.GetString("role_id")), "修改失败", MESSAGE_TYPE_ERROR)
 		}
 
 	}
 
 	this.Data["model"] = roleModel
 	this.AddBreadcrumbs("角色管理", this.URLFor("RoleController.Index"))
-	this.AddBreadcrumbs("修改", this.URLFor("RoleController.Put", "role_id", role_id))
+	this.AddBreadcrumbs("修改", this.URLFor("RoleController.Put", "role_id", this.GetString("role_id")))
 	this.AddBreadcrumbs(roleModel.Name, "")
 	this.ShowHtml()
 }
@@ -102,14 +94,13 @@ func (this *RoleController) Put() {
 //角色授权展示页面
 func (this *RoleController) Assignment() {
 	roleModel := models.Role{}
-	role_id := strings.TrimSpace(this.GetString("role_id"))
 
-	if id, err := strconv.Atoi(role_id); err == nil {
-		if err := roleModel.FindById(id); err != nil {
-			this.AddErrorMessage("数据获取失败")
+	if id, err := this.GetInt("role_id"); err == nil {
+		if err := roleModel.FindById(id); err != nil || roleModel.IsNewRecord() {
+			this.redirectMessage(this.URLFor("RoleController.Index"), "数据获取失败", MESSAGE_TYPE_ERROR)
 		}
 	} else {
-		this.AddErrorMessage("数据不存在")
+		this.redirectMessage(this.URLFor("RoleController.Index"), "数据不存在", MESSAGE_TYPE_ERROR)
 	}
 
 	//获取全部权限
@@ -145,7 +136,7 @@ func (this *RoleController) Assignment() {
 	this.Data["unassignmentPermssionNames"] = unassignmentPermssionNames
 	this.Data["assignmentPermssionNames"] = assignmentPermssionNames
 	this.AddBreadcrumbs("角色管理", this.URLFor("RoleController.Index"))
-	this.AddBreadcrumbs("权限授权", this.URLFor("RoleController.Assignment", "role_id", role_id))
+	this.AddBreadcrumbs("权限授权", this.URLFor("RoleController.Assignment", "role_id", this.GetString("role_id")))
 	this.AddBreadcrumbs(roleModel.Name, "")
 	this.ShowHtml()
 }
@@ -156,22 +147,19 @@ func (this *RoleController) AjaxAssignment() {
 
 	if this.isPost() {
 		paramPermissionName := strings.TrimSpace(this.GetString("permission_name"))
-		paramRoleId := strings.TrimSpace(this.GetString("role_id"))
+		intRoleId, err := this.GetInt("role_id")
 
-		permissionModel := models.Permission{}
-		if err := permissionModel.FindByName(paramPermissionName); err != nil {
-			data.Code = 400
-			data.Message = "权限不能为空"
-			this.ShowJSON(&data)
-		}
-
-		var intRoleId int
-		if id, err := strconv.Atoi(paramRoleId); err != nil {
+		if err != nil {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-		} else {
-			intRoleId = id
+		}
+
+		permissionModel := models.Permission{}
+		if err := permissionModel.FindByName(paramPermissionName); err != nil || permissionModel.IsNewRecord() {
+			data.Code = 400
+			data.Message = "权限不能为空"
+			this.ShowJSON(&data)
 		}
 
 		perAssignmentModel := models.AssignmentPermission{}
@@ -199,22 +187,19 @@ func (this *RoleController) AjaxUnassignment() {
 
 	if this.isPost() {
 		paramPermissionName := strings.TrimSpace(this.GetString("permission_name"))
-		paramRoleId := strings.TrimSpace(this.GetString("role_id"))
+		intRoleId, err := this.GetInt("role_id")
 
-		permissionModel := models.Permission{}
-		if err := permissionModel.FindByName(paramPermissionName); err != nil {
-			data.Code = 400
-			data.Message = "权限不能为空"
-			this.ShowJSON(&data)
-		}
-
-		var intRoleId int
-		if id, err := strconv.Atoi(paramRoleId); err != nil {
+		if err != nil {
 			data.Code = 400
 			data.Message = err.Error()
 			this.ShowJSON(&data)
-		} else {
-			intRoleId = id
+		}
+
+		permissionModel := models.Permission{}
+		if err := permissionModel.FindByName(paramPermissionName); err != nil || permissionModel.IsNewRecord() {
+			data.Code = 400
+			data.Message = "权限不能为空"
+			this.ShowJSON(&data)
 		}
 
 		perAssignmentModel := models.AssignmentPermission{}
@@ -243,7 +228,7 @@ func (this *RoleController) AjaxUnassignment() {
 func (this *RoleController) Delete() {
 	data := JsonData{}
 	if this.isPost() {
-		role_id, err := strconv.Atoi(strings.TrimSpace(this.GetString("role_id")))
+		role_id, err := this.GetInt("role_id")
 
 		if err != nil {
 			data.Code = 400

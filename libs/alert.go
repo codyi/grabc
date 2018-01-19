@@ -7,6 +7,9 @@ type Alert struct {
 	Warning_messages []string
 }
 
+func (this *Alert) HasError() bool {
+	return len(this.Error_messages) > 0
+}
 func (this *Alert) AddErrorMessage(message string) {
 	this.Error_messages = append(this.Error_messages, message)
 }

@@ -9,6 +9,9 @@ import (
 	"strings"
 )
 
+const MESSAGE_TYPE_SUCCESS = "success"
+const MESSAGE_TYPE_ERROR = "error"
+
 func init() {
 	libs.ExceptMethodAppend("ShowHtml", "ShowJSON")
 	beego.AddFuncMap("unixTimeFormat", libs.UnixTimeFormat)
@@ -40,6 +43,14 @@ type BaseController struct {
 func (this *BaseController) redirect(url string) {
 	this.Controller.Redirect(url, 302)
 	this.StopRun()
+}
+
+func (this *BaseController) redirectMessage(url, message, messageType string) {
+	this.AddBreadcrumbs("消息提示", "")
+	this.Data["redirect_url"] = url
+	this.Data["message"] = message
+	this.Data["message_type"] = messageType
+	this.ShowHtml("layout/tip.html")
 }
 
 // Prepare

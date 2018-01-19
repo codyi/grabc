@@ -46,6 +46,7 @@ func AccessMenus() []*MenuGroup {
 		mg.Child = make([]newMenu, 0)
 
 		//查找子菜单、并检查权限
+		isHasChildMenu := false
 		for _, childMenu := range childMenus {
 			if childMenu.Parent != parentMenu.Id {
 				continue
@@ -54,7 +55,7 @@ func AccessMenus() []*MenuGroup {
 			r := strings.Split(childMenu.Url, "/")
 			controllerName := r[0]
 			routeName := r[1]
-
+			isHasChildMenu = true
 			if CheckAccess(controllerName, routeName, allAccessRoutes) {
 				cm := newMenu{}
 				cm.Name = childMenu.Name
@@ -65,7 +66,7 @@ func AccessMenus() []*MenuGroup {
 		}
 
 		//如果不存在子菜单，将检查父级菜单的权限
-		if len(mg.Child) == 0 {
+		if len(mg.Child) == 0 && isHasChildMenu == false {
 			r := strings.Split(parentMenu.Url, "/")
 			controllerName := r[0]
 			routeName := r[1]
@@ -75,7 +76,7 @@ func AccessMenus() []*MenuGroup {
 				mg.Parent.Url = "/" + parentMenu.Url
 				mg.Parent.Icon = parentMenu.Icon
 			}
-		} else {
+		} else if len(mg.Child) > 0 {
 			mg.Parent = newMenu{}
 			mg.Parent.Name = parentMenu.Name
 			mg.Parent.Url = "/" + parentMenu.Url

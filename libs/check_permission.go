@@ -17,9 +17,6 @@ var Identify *IUserIdentify
 //忽律检查权限的网址
 var IgnoreRoutes map[string][]string = make(map[string][]string, 0)
 
-//404页面网址
-var Http_403 string = ""
-
 //获取用户全部可以访问的路由
 func AccessRoutes() map[string][]string {
 	allAccessRoutes := make(map[string][]string, 0)

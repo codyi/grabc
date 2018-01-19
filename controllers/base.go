@@ -60,7 +60,7 @@ func (this *BaseController) Prepare() {
 	this.actionName = strings.ToLower(actionName)
 
 	if !libs.CheckAccess(this.controllerName, this.actionName, libs.AccessRoutes()) {
-		this.redirect(libs.Http_403)
+		this.redirectMessage("/", "权限不足", MESSAGE_TYPE_ERROR)
 	}
 }
 

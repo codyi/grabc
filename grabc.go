@@ -74,11 +74,6 @@ func AddLayoutData(name string, value interface{}) {
 	libs.Template.Data[name] = value
 }
 
-//返回用户可以看到的导航
-func AccessMenus() []*libs.MenuGroup {
-	return libs.AccessMenus()
-}
-
 //设置grabc模板的路径
 func SetViewPath(path string) {
 	libs.Template.ViewPath = path

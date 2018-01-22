@@ -5,15 +5,12 @@ var Template GrabcTemplate
 
 func init() {
 	Template = GrabcTemplate{}
-	Template.Data = make(map[string]interface{}, 0)
-
 }
 
 type GrabcTemplate struct {
 	LayoutName string
 	LayoutPath string
 	ViewPath   string
-	Data       map[string]interface{}
 }
 
 func (this *GrabcTemplate) GlobalCss() string {

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"github.com/astaxie/beego"
 	"github.com/codyi/grabc/libs"
-	// "path/filepath"
 	"html/template"
 	"strings"
 )
@@ -58,6 +57,7 @@ func (this *BaseController) Prepare() {
 	controlerName, actionName := this.GetControllerAndAction()
 	this.controllerName = strings.ToLower(controlerName[0 : len(controlerName)-10])
 	this.actionName = strings.ToLower(actionName)
+	libs.BeegoC = &this.Controller
 
 	if !libs.CheckAccess(this.controllerName, this.actionName, libs.AccessRoutes()) {
 		this.redirectMessage("/", "权限不足", MESSAGE_TYPE_ERROR)

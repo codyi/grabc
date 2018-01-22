@@ -38,9 +38,14 @@ func RegisterController(controllers ...beego.ControllerInterface) {
 	}
 }
 
-//注册登录用户
-func RegisterIdentify(i libs.IUserIdentify) {
-	libs.Identify = &i
+//注册用于获取登录用户ID的函数
+func RegisterUserIdFunc(f func(c *beego.Controller) int) {
+	libs.RegisterUserIdFunc = f
+}
+
+//注册当前请求beego的Controller
+func SetBeegoController(c *beego.Controller) {
+	libs.BeegoC = c
 }
 
 //注册用户的模型表，用于获取用户的id和用户名称

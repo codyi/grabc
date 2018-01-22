@@ -44,13 +44,26 @@ func init() {
 	// grabc.SetViewPath("views")
 	//设置grabc的layout
 	grabc.SetLayout("layout/main.html", "views")
+
+	//注册获取当前登录用户ID的函数
+	grabc.RegisterUserIdFunc(func(c *beego.Controller) int {
+		sessionUId := c.GetSession("login_user_id")
+
+		if sessionUId != nil {
+			user := models.User{}
+			user.FindById(sessionUId.(int))
+			return user.Id
+		}
+
+		return 0
+	})
 }
 </pre>
 
 添加好上面的配置之后，剩下就是在controller中增加权限判了，个人建议做一个BaseController，然后每个controller都继承这个base，然后在BaseController中的Prepare方法中增加grabc的权限检查~~
 <pre>
-//注册当前登录的用户，注意：user需要继承IUserIdentify接口
-grabc.RegisterIdentify(user)
+//注册当前请求的beego.Controller
+grabc.SetBeegoController(&this.Controller)
 //检查权限
 if !grabc.CheckAccess(this.controllerName, this.actionName) {
 	this.redirect(this.URLFor("SiteController.NoPermission"))
@@ -79,13 +92,6 @@ type IUserModel interface {
 	UserList(pageIndex, pageCount int) (userList map[int]string, totalNum int, err error)
 	//根据用户ID获取用户姓名
 	FindNameById(id int) string 
-}
-</pre>
-
-IUserIdentify接口
-<pre>
-type IUserIdentify interface {
-	GetId() int //返回当前登录用户的ID
 }
 </pre>
 

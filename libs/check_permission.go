@@ -1,18 +1,16 @@
 package libs
 
 import (
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/utils"
 	"github.com/codyi/grabc/models"
 	"strings"
 )
 
-//用于定义用户接口
-type IUserIdentify interface {
-	GetId() int //返回当前登录用户的ID
-}
+//用于保存注册的beego.Controller
+var BeegoC *beego.Controller
 
-//用于保存外部注册的登录用户实例
-var Identify *IUserIdentify
+var RegisterUserIdFunc func(c *beego.Controller) int
 
 //忽律检查权限的网址
 var IgnoreRoutes map[string][]string = make(map[string][]string, 0)
@@ -22,8 +20,8 @@ func AccessRoutes() map[string][]string {
 	allAccessRoutes := make(map[string][]string, 0)
 
 	//如果存在用户ID，则获取用户对应的权限
-	if Identify != nil && (*Identify).GetId() > 0 {
-		allAccessRoutes = models.Route{}.ListByUserId((*Identify).GetId())
+	if RegisterUserIdFunc != nil && RegisterUserIdFunc(BeegoC) > 0 {
+		allAccessRoutes = models.Route{}.ListByUserId(RegisterUserIdFunc(BeegoC))
 	}
 
 	//将忽律检查的路由和可以登录的路由合并

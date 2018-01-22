@@ -6,7 +6,7 @@
 
 GRABC 是一个beego权限管理插件，插件分为路由、权限、角色。将路由分配给权限，权限授给角色，角色授给用户~~
 GRABC 目前依赖的前端是adminlte和boostrap
-
+更详细的文档见：grabc.liguosong.com
 ### 安装
     go get github.com/codyi/grabc
 

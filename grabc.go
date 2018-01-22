@@ -76,7 +76,13 @@ func SetLayout(layoutName string, layoutPath string) {
 
 //设置grabc的模板的数据
 func AddLayoutData(name string, value interface{}) {
-	libs.Template.Data[name] = value
+	if libs.BeegoC.GetSession("grabc_layout_data") == nil {
+		libs.BeegoC.SetSession("grabc_layout_data", make(map[string]interface{}, 0))
+	}
+
+	data := libs.BeegoC.GetSession("grabc_layout_data").(map[string]interface{})
+	data[name] = value
+	libs.BeegoC.SetSession("grabc_layout_data", data)
 }
 
 //设置grabc模板的路径

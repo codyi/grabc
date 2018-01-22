@@ -134,8 +134,11 @@ func (this *BaseController) ShowHtml(tpl ...string) {
 	this.Data["breadcrumbs"] = this.ShowBreadcrumbs()
 	this.Data["menus"] = libs.ShowMenu(this.controllerName, this.actionName)
 
-	if len(libs.Template.Data) > 0 {
-		for name, value := range libs.Template.Data {
+	layoutData := this.GetSession("grabc_layout_data")
+
+	if layoutData != nil {
+		d := layoutData.(map[string]interface{})
+		for name, value := range d {
 			if _, isExist := this.Data[name]; isExist {
 				panic("设置layout数据失败，因为" + name + "已经存在")
 			}
